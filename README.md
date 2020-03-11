@@ -1,2 +1,2 @@
-# mccolm-communicator
-Touch-based networked communication system over RP3
+# Claver - An interactive message board
+Touch-based networked communication system using RPi4
