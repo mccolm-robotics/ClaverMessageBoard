@@ -1,0 +1,50 @@
+.button-background {
+    background-image: url("../button_images/button.png");
+    border-image: none;
+    color: gray;
+    font-weight: bold;
+    font-size: 18px;
+    margin: 0;
+    padding: 0;
+    padding-top: 2px;
+    border: 0;
+    min-width: 400px;
+    min-height: 120px;
+    box-shadow: none;
+}
+
+#myButton_green.button-background {
+    color: green;
+}
+
+#myButton_green.button-background:hover {
+    background-image: url("../button_images/button.png");
+}
+
+#myButton_red.button-background {
+    color: red;
+}
+
+#myButton_red.button-background:hover {
+    background-image: url("../button_images/button-bright-red.png");
+}
+
+.blue-text:focus {
+    color: green;
+}
+
+.blue-text:hover {
+    color: orange;
+}
+
+.blue-text {
+    color: #197cc3;
+}
+
+.main-grid {
+    background-color: yellow;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    margin-right: 0px;
+}
