@@ -10,3 +10,15 @@ res_dir = dict(
 theme_prefs = dict(
     OUTLINE=5
 )
+
+button_labels = [
+    ["Doodle", True],
+    ["Games", False],
+    ["Messages", False],
+    ["Photos", False],
+    ["News", False],
+    ["Timer", False],
+    ["Calendar", False],
+    ["Lists", False],
+    ["Settings", False]
+]

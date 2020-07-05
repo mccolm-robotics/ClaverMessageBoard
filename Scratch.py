@@ -1,4 +1,13 @@
-list = ["bob", "joey", "peter"]
+button_labels = {
+    "Doodle",
+    "Games",
+    "Messages",
+    "Photos",
+    "News",
+    "Timer",
+    "Calendar",
+    "Lists",
+    "Settings"
+}
 
-for index, name in enumerate(list, start=3):
-    print("index:{}, name:{}".format(index, name))
+print(button_labels[0])
