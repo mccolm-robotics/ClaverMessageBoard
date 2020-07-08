@@ -16,12 +16,17 @@
     background-color: #2b2b2b;
 }
 
+.content-box {
+    background-color: #dbdbdb;
+}
+
 .label-notification {
     color: white;
     background-color: #20577a;
     font-weight: bold;
     font-size: 25px;
     padding: 10px;
+    min-width: 161px;
 }
 
 .nav-button-label {
@@ -66,4 +71,87 @@
     margin-bottom: 0px;
     margin-top: 0px;
     margin-right: 0px;
+}
+
+.settings-menu-panel {
+    background-color: #2b2b2b;
+}
+
+.settings-menu-button:focus {
+    color: #dbdbdb;
+    background-color: #20577a;
+}
+
+.settings-menu-button:hover {
+    color: #dbdbdb;
+    background-color: #373737;
+}
+
+.settings-menu-button {
+    color: #dbdbdb;
+    font-size: 23px;
+    background-color: #2b2b2b;
+    background-image: none;
+    border-image: none;
+    border-radius: 0px;
+    padding: 7px;
+}
+
+.settings-menu-title {
+    color: white;
+    background-color: #2b2b2b;
+    font-weight: bold;
+    font-size: 25px;
+    padding: 10px;
+    margin-right: 8px;
+}
+
+.content-area {
+    background-color: #353535;
+}
+
+.settings-menu-button-search {
+    color: white;
+    font-size: 20px;
+    background-color: #bebebe;
+    background-image: none;
+    border-image: none;
+    border-radius: 5px;
+    margin: 8px;
+    min-width: 15px;
+    min-height: 25px;
+}
+
+.settings-menu-button-search:hover {
+    background-color: #20577a;
+}
+
+.cat-menu-title {
+    color: white;
+    background-color: #20577a;
+    font-weight: bold;
+    font-size: 25px;
+    padding: 10px;
+    margin-top: 15px;
+    margin-left: 50px;
+    margin-right: 50px;
+    border-radius: 8px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: black;
+}
+
+.about-menu-portrait {
+    margin-top: 25px;
+    margin-right: 55px;
+    padding: 0px;
+    border-radius: 8px;
+    border-width: 3px;
+    border-style: solid;
+    border-color: black;
+    box-shadow: 10px 10px 8px #121212;
+}
+
+.test {
+    background-color: green;
 }

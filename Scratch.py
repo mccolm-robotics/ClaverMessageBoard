@@ -1,13 +1,5 @@
-button_labels = {
-    "Doodle",
-    "Games",
-    "Messages",
-    "Photos",
-    "News",
-    "Timer",
-    "Calendar",
-    "Lists",
-    "Settings"
-}
+def test():
+    pass
 
-print(button_labels[0])
+def func():
+    print("the function I want")
