@@ -101,6 +101,7 @@ class AboutMenu(SettingsMenuTemplate):
         cat_title.set_text(title)
         cat_value = Gtk.Label()
         cat_value.set_text(value)
+        cat_value.get_style_context().add_class('test-size')
         box.add(cat_title)
         box.add(cat_value)
         return box

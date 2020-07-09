@@ -10,7 +10,8 @@ class CategoryManagerTemplate(ABC):
         super().__init__()
         self.__guiManager = guiManager
         self.__guiManager.registerUpdateCallback(self.updateContentAreaSize)
-        self.__contentAreaSize = [1, 1]
+        self.__updateCallbacks = []
+        self.__contentAreaSize = (1, 1)
         self.__initialized = False
 
 
@@ -18,8 +19,9 @@ class CategoryManagerTemplate(ABC):
     def updateContentAreaSize(self, contentAreaSize):
         """ Callback function triggered by window resize. Called by GuiManager """
         if self.__initialized:
-            if contentAreaSize != self.__contentAreaSize:
-                self.__contentAreaSize = contentAreaSize
+            # Using tuple: must compare individual elements
+            if contentAreaSize[0] != self.__contentAreaSize[0] or contentAreaSize[1] != self.__contentAreaSize[1]:
+                self.__contentAreaSize = tuple(contentAreaSize)     # prevent copy by reference
                 if self.__UPDATE_FUNCTION is not None:
                     self.__UPDATE_FUNCTION()
         else:
@@ -31,8 +33,15 @@ class CategoryManagerTemplate(ABC):
         return self.__contentAreaSize
 
 
+    # Function decorator. Use with @callback_on_resize
     @staticmethod
     def callback_on_resize(func):
         """ Stores a reference to child classes's resize function """
         CategoryManagerTemplate.__UPDATE_FUNCTION = func
 
+    def updateCallbackFunctions(self, dimensions):
+        for function in self.__updateCallbacks:
+            function(dimensions)
+
+    def registerUpdateCallback(self, function):
+        self.__updateCallbacks.append(function)

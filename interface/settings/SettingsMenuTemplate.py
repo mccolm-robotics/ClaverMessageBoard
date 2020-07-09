@@ -36,3 +36,4 @@ class SettingsMenuTemplate(ABC):
         """ Stores a reference to child classes's resize function """
         SettingsMenuTemplate.__UPDATE_FUNCTION = func
 
+

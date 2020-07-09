@@ -1,5 +1,10 @@
-def test():
-    pass
+test = (1, 1)
 
-def func():
-    print("the function I want")
+var = [1, 1]
+
+foo = test
+
+test = (2, 2)
+
+print(test)
+print(foo)

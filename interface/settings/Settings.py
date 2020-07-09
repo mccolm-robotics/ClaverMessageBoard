@@ -54,3 +54,5 @@ res_dir = dict(
 theme_prefs = dict(
     OUTLINE=5
 )
+
+print(RES_FOLDER)

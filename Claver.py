@@ -8,6 +8,10 @@ from interface.gui.GuiManager import GuiManager
 
 class Claver_Main(Gtk.Application):
 
+    BUILD_NUMBER = "Summer 2020 (dev)"
+    # https://github.com/zestsoftware/zest.releaser
+    # https://pypi.org/project/bumpversion/
+
     WINDOW_WIDTH = 1280
     WINDOW_HEIGHT = 720
 

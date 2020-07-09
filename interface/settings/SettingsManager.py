@@ -15,13 +15,11 @@ from interface.settings.categories.ThemeMenu import ThemeMenu
 class SettingsManager(CategoryManagerTemplate):
     def __init__(self, guiManager):
         """ Constructor """
-        self.__guiManager = guiManager
+        super().__init__(guiManager)
         self.__contentAreaDimensions = [1, 1]
         self.__menuAreaDimensions = [1, 1]
         self.__menuContentSize = [1, 1]
-        self.__guiManager.registerUpdateCallback(self.updateContentAreaDimensions)
         self.__active_menu = None
-        self.__updateCallbacks = []
         self.__menu_dict = {
             settings.settings_menu_labels[0]: GeneralMenu(),
             settings.settings_menu_labels[1]: ThemeMenu(),
@@ -38,23 +36,19 @@ class SettingsManager(CategoryManagerTemplate):
 
     def registerUpdateCallback(self, function):
         """ Callback registration: used by menu pages to receive updates about window resize events """
-        self.__updateCallbacks.append(function)
+        super().registerUpdateCallback(function)
 
     @CategoryManagerTemplate.callback_on_resize
-    def updateContentAreaDimensions(self, dimensions):
+    def updateContentDimensions(self):
         """ Callback function: registered to receive updates from GuiManager when window resized """
-        self.__contentAreaDimensions = dimensions
+        self.__contentAreaDimensions = super().getContentAreaSize()
         menu_rect = self.menu.getMenuBoxAllocation()
         self.__menuAreaDimensions = [menu_rect.width, menu_rect.height]
         self.__menuContentSize = [self.__contentAreaDimensions[0] - self.__menuAreaDimensions[0], self.__menuAreaDimensions[1]]
-
-        for function in self.__updateCallbacks:
-            function(self.__menuContentSize)
+        super().updateCallbackFunctions(self.__menuContentSize)
 
     def __build_content(self):
         """ Initilization: composes layout of settings area """
-        # test = self.__guiManager.getContentAreaDimensions()
-        # print(test[0], test[1])
         self.menu = SettingsMenu(self)
         menu_container = self.menu.getLayoutContainer()
         self.__layoutContainer.attach(child=menu_container, left=0, top=0, width=1, height=1)
@@ -66,12 +60,12 @@ class SettingsManager(CategoryManagerTemplate):
         self.loadMenu(self.__active_menu)
 
     def loadMenu(self, menuLabel):
+        """ Load and Initialize: switches out menu pages """
         if self.__active_menu == None:
             self.__active_menu = settings.settings_menu_labels[0]
         else:
             self.__content_area.remove(self.__menu_dict[self.__active_menu].getLayoutContainer())
             self.__active_menu = menuLabel
-
         self.__content_area.add(self.__menu_dict[self.__active_menu].getLayoutContainer())
         self.__content_area.show_all()
 
