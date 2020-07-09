@@ -27,4 +27,5 @@ on a Raspberry Pi 4 Model B with a 1080p touchscreen monitor.
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 
 This project is licensed under the MIT License - see the LICENSE.md file for details
+
 Copyright 2020 © McColm Robotics
