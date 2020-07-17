@@ -28,4 +28,4 @@ on a Raspberry Pi 4 Model B with a 1080p touchscreen monitor.
 
 This project is licensed under the MIT License - see the LICENSE.md file for details
 
-Copyright 2020 © McColm Robotics
+Copyright © 2020 McColm Robotics
