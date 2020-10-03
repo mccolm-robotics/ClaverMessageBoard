@@ -1,11 +1,13 @@
 import sys
+
 import gi
+
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, Gdk
 from .interface.settings.Settings import res_dir
 from .interface.gui.GuiManager import GuiManager
-from interface.network.NodeClient import NodeClient
+
 
 class ClaverMessageBoard(Gtk.Application):
 
