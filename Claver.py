@@ -5,6 +5,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 from interface.settings.Settings import res_dir
 from interface.gui.GuiManager import GuiManager
+from interface.network.NodeClient import NodeClient
 
 class Claver_Main(Gtk.Application):
 
@@ -38,6 +39,7 @@ class Claver_Main(Gtk.Application):
         window.connect("size-allocate", self.on_resize)
         window.connect("key-release-event", self.on_key_release)
 
+        # Adds a drawing layer to the window
         window.add(self.__gui_manager.getOverlay())
 
         window.show_all()
