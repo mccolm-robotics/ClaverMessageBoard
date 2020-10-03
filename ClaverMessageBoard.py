@@ -1,4 +1,5 @@
 import sys
+import threading
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
@@ -8,9 +9,11 @@ from gi.repository import Gtk, Gdk
 if __name__ == '__main__':
     from interface.settings.Settings import res_dir
     from interface.gui.GuiManager import GuiManager
+    from NodeConnector import NodeConnector
 else:
     from .interface.settings.Settings import res_dir
     from .interface.gui.GuiManager import GuiManager
+    from .NodeConnector import NodeConnector
 
 
 class ClaverMessageBoard(Gtk.Application):
@@ -34,6 +37,10 @@ class ClaverMessageBoard(Gtk.Application):
         self.__gui_manager = GuiManager(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
         self.is_fullscreen = False
 
+        self.node_connector = NodeConnector(self)
+        self.t1 = threading.Thread(target=self.node_connector.run_asyncio)
+        self.t1.daemon = True
+        self.t1.start()
         self.request_callback = request_callback
         if request_callback is not None:
             self.request_callback(0)
@@ -74,6 +81,16 @@ class ClaverMessageBoard(Gtk.Application):
         self.WINDOW_WIDTH = size_rect.width
         self.WINDOW_HEIGHT = size_rect.height
         self.__gui_manager.updateContentAreaDimensions(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
+
+    def update_gui(self, data):
+        # if "type" in data:
+        #     if data["type"] == "state":
+        #         self.update_state_label(data["value"])
+        #     elif data["type"] == "users":
+        #         self.update_users_label(data["count"])
+        #     else:
+        #         print("Unsupported event")
+        print(data)
 
 if __name__ == "__main__":
     application = ClaverMessageBoard()
