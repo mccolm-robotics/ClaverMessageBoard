@@ -2,7 +2,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, GdkPixbuf
-import interface.settings.Settings as settings
+from .Settings import *
 
 class SettingsMenu:
     def __init__(self, settingsManager):
@@ -27,7 +27,7 @@ class SettingsMenu:
         menu_label_box.set_margin_bottom(15)
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=settings.res_dir['BUTTON_IMAGES'] + "Search.png",
+            filename=res_dir['BUTTON_IMAGES'] + "Search.png",
             width=20,
             height=20,
             preserve_aspect_ratio=True)
@@ -49,7 +49,7 @@ class SettingsMenu:
 
     def __build_Button_list(self):
         group = Gtk.RadioButton.new(None)
-        for index, label in enumerate(settings.settings_menu_labels):
+        for index, label in enumerate(settings_menu_labels):
             button = Gtk.RadioButton.new_with_label_from_widget(group, label)
             button.get_style_context().add_class('settings-menu-button')
             button.set_mode(False)
