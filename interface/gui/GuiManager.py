@@ -3,19 +3,19 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk
 
-from interface.gui.NotificationLayer import NotificationLayer
-from interface.gui.MenuLayer import MenuLayer
-from interface.gui.ContentLayer import ContentLayer
-import interface.settings.Settings as settings
-from interface.doodle.DoodleManager import DoodleManager
-from interface.games.GamesManager import GamesManager
-from interface.messages.MessagesManager import MessagesManager
-from interface.photos.PhotosManager import PhotosManager
-from interface.news.NewsManager import NewsManager
-from interface.timer.TimerManager import TimerManager
-from interface.calendar.CalendarManager import CalendarManager
-from interface.lists.ListsManager import ListsManager
-from interface.settings.SettingsManager import SettingsManager
+from .interface.gui.NotificationLayer import NotificationLayer
+from .interface.gui.MenuLayer import MenuLayer
+from .interface.gui.ContentLayer import ContentLayer
+import .interface.settings.Settings as settings
+from .interface.doodle.DoodleManager import DoodleManager
+from .interface.games.GamesManager import GamesManager
+from .interface.messages.MessagesManager import MessagesManager
+from .interface.photos.PhotosManager import PhotosManager
+from .interface.news.NewsManager import NewsManager
+from .interface.timer.TimerManager import TimerManager
+from .interface.calendar.CalendarManager import CalendarManager
+from .interface.lists.ListsManager import ListsManager
+from .interface.settings.SettingsManager import SettingsManager
 
 
 class GuiManager:
