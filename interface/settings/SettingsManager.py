@@ -2,14 +2,14 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk
-import interface.settings.Settings as settings
-from interface.gui.CategoryManagerTemplate import CategoryManagerTemplate
-from interface.settings.SettingsMenu import SettingsMenu
-from interface.settings.categories.AboutMenu import AboutMenu
-from interface.settings.categories.AccountMenu import AccountMenu
-from interface.settings.categories.GeneralMenu import GeneralMenu
-from interface.settings.categories.NetworkMenu import NetworkMenu
-from interface.settings.categories.ThemeMenu import ThemeMenu
+from .Settings import *
+from ..gui.CategoryManagerTemplate import CategoryManagerTemplate
+from .SettingsMenu import SettingsMenu
+from .categories.AboutMenu import AboutMenu
+from .categories.AccountMenu import AccountMenu
+from .categories.GeneralMenu import GeneralMenu
+from .categories.NetworkMenu import NetworkMenu
+from .categories.ThemeMenu import ThemeMenu
 
 
 class SettingsManager(CategoryManagerTemplate):
@@ -21,11 +21,11 @@ class SettingsManager(CategoryManagerTemplate):
         self.__menuContentSize = [1, 1]
         self.__active_menu = None
         self.__menu_dict = {
-            settings.settings_menu_labels[0]: GeneralMenu(),
-            settings.settings_menu_labels[1]: ThemeMenu(),
-            settings.settings_menu_labels[2]: NetworkMenu(),
-            settings.settings_menu_labels[3]: AccountMenu(),
-            settings.settings_menu_labels[4]: AboutMenu(self)
+            settings_menu_labels[0]: GeneralMenu(),
+            settings_menu_labels[1]: ThemeMenu(),
+            settings_menu_labels[2]: NetworkMenu(),
+            settings_menu_labels[3]: AccountMenu(),
+            settings_menu_labels[4]: AboutMenu(self)
         }
         self.__layoutContainer = Gtk.Grid(column_homogeneous=False, column_spacing=0, row_spacing=0)
         self.__build_content()
@@ -62,7 +62,7 @@ class SettingsManager(CategoryManagerTemplate):
     def loadMenu(self, menuLabel):
         """ Load and Initialize: switches out menu pages """
         if self.__active_menu == None:
-            self.__active_menu = settings.settings_menu_labels[0]
+            self.__active_menu = settings_menu_labels[0]
         else:
             self.__content_area.remove(self.__menu_dict[self.__active_menu].getLayoutContainer())
             self.__active_menu = menuLabel
