@@ -7,7 +7,7 @@ from interface.settings.Settings import res_dir
 from interface.gui.GuiManager import GuiManager
 from interface.network.NodeClient import NodeClient
 
-class Claver_Main(Gtk.Application):
+class ClaverMessageBoard(Gtk.Application):
 
     BUILD_NUMBER = "Summer 2020 (dev)"
     # https://github.com/zestsoftware/zest.releaser
@@ -66,6 +66,6 @@ class Claver_Main(Gtk.Application):
         self.__gui_manager.updateContentAreaDimensions(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
 
 if __name__ == "__main__":
-    application = Claver_Main()
+    application = ClaverMessageBoard()
     exit_status = application.run(sys.argv)
     sys.exit(exit_status)
