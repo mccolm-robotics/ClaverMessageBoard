@@ -3,7 +3,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, Gdk
-from interface.settings.Settings import *
+from ..settings.Settings import *
 
 class MenuLayer:
 
