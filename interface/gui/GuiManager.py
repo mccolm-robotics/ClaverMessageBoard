@@ -3,19 +3,19 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk
 
-from .interface.gui.NotificationLayer import NotificationLayer
-from .interface.gui.MenuLayer import MenuLayer
-from .interface.gui.ContentLayer import ContentLayer
-import .interface.settings.Settings as settings
-from .interface.doodle.DoodleManager import DoodleManager
-from .interface.games.GamesManager import GamesManager
-from .interface.messages.MessagesManager import MessagesManager
-from .interface.photos.PhotosManager import PhotosManager
-from .interface.news.NewsManager import NewsManager
-from .interface.timer.TimerManager import TimerManager
-from .interface.calendar.CalendarManager import CalendarManager
-from .interface.lists.ListsManager import ListsManager
-from .interface.settings.SettingsManager import SettingsManager
+from .NotificationLayer import NotificationLayer
+from .MenuLayer import MenuLayer
+from .ContentLayer import ContentLayer
+from ..settings.Settings import *
+from ..doodle.DoodleManager import DoodleManager
+from ..games.GamesManager import GamesManager
+from ..messages.MessagesManager import MessagesManager
+from ..photos.PhotosManager import PhotosManager
+from ..news.NewsManager import NewsManager
+from ..timer.TimerManager import TimerManager
+from ..calendar.CalendarManager import CalendarManager
+from ..lists.ListsManager import ListsManager
+from ..settings.SettingsManager import SettingsManager
 
 
 class GuiManager:
@@ -29,15 +29,15 @@ class GuiManager:
         self.__updateCallbacks = []
         self.__contentAreaDimensions = [1, 1]
         self.__apps_dict = {
-            settings.menu_labels[0][0]: DoodleManager(),
-            settings.menu_labels[1][0]: GamesManager(),
-            settings.menu_labels[2][0]: MessagesManager(),
-            settings.menu_labels[3][0]: PhotosManager(),
-            settings.menu_labels[4][0]: NewsManager(),
-            settings.menu_labels[5][0]: TimerManager(),
-            settings.menu_labels[6][0]: CalendarManager(),
-            settings.menu_labels[7][0]: ListsManager(),
-            settings.menu_labels[8][0]: SettingsManager(self)
+            menu_labels[0][0]: DoodleManager(),
+            menu_labels[1][0]: GamesManager(),
+            menu_labels[2][0]: MessagesManager(),
+            menu_labels[3][0]: PhotosManager(),
+            menu_labels[4][0]: NewsManager(),
+            menu_labels[5][0]: TimerManager(),
+            menu_labels[6][0]: CalendarManager(),
+            menu_labels[7][0]: ListsManager(),
+            menu_labels[8][0]: SettingsManager(self)
         }
         self.__activeMenu = None
         self.__build_default_interface()
@@ -66,7 +66,7 @@ class GuiManager:
         else:
             self.__layers[2][0].removeLayoutContainer(self.__apps_dict[self.__activeMenu].getLayoutContainer())
             self.__activeMenu = menuItemLabel
-            self.setBackgroundColour(settings.settings_menu_background_classes_dict[menuItemLabel])
+            self.setBackgroundColour(settings_menu_background_classes_dict[menuItemLabel])
 
         self.__layers[2][0].addLayoutContainer(self.__apps_dict[menuItemLabel].getLayoutContainer())
 
@@ -81,7 +81,7 @@ class GuiManager:
         self.__layers.append([ContentLayer(self.__window_width, self.__window_height, self.__contentAreaDimensions), 2, True])
         self.__addOverlays()
 
-        self.loadContentArea(settings.default_menu)
+        self.loadContentArea(default_menu)
 
     def __addOverlays(self):
         for layer in self.__layers:
