@@ -2,8 +2,8 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, GdkPixbuf
-from interface.settings.SettingsMenuTemplate import SettingsMenuTemplate
-import interface.settings.Settings as settings
+from ..SettingsMenuTemplate import SettingsMenuTemplate
+from ..Settings import *
 
 class AboutMenu(SettingsMenuTemplate):
 
@@ -12,11 +12,11 @@ class AboutMenu(SettingsMenuTemplate):
     def __init__(self, settingsManager):
         """ Constructor """
         super().__init__(settingsManager)
-        self.__headerImageFile = settings.res_dir['TEXTURES'] + "AboutHeader.png"
+        self.__headerImageFile = res_dir['TEXTURES'] + "AboutHeader.png"
         self.__headerImageWidth = 800
         self.__headerImageHeight = 219
         self.__headerImage = None
-        self.__portraitImageFile = settings.res_dir['TEXTURES'] + "ClaverCanvasMatthew.png"
+        self.__portraitImageFile = res_dir['TEXTURES'] + "ClaverCanvasMatthew.png"
         self.__portraitImageWidth = 250
         self.__portraitImageHeight = 350
         self.__portraitImage = None
@@ -91,7 +91,7 @@ class AboutMenu(SettingsMenuTemplate):
         # - get required info details
         # - send off to convert to labels
         # - add to content box
-        build = self.__addItemLabel("Build", settings.build_number)
+        build = self.__addItemLabel("Build", build_number)
         contentBox.add(build)
 
     def __addItemLabel(self, title, value):
