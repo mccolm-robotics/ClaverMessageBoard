@@ -2,12 +2,12 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, Gdk
-import interface.settings.Settings as settings
+from ..settings.Settings import *
 
 class NotificationLayer:
     def __init__(self):
         """ Constructor """
-        self.__default_css_class = settings.default_css_class
+        self.__default_css_class = default_css_class
         self.__temp_css_class = None
         self.__layout_container = Gtk.Grid(column_homogeneous=False, column_spacing=0, row_spacing=0)  # Create a grid to manage containers
         self.__build_layer()
