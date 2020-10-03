@@ -1,12 +1,16 @@
 import sys
-
 import gi
-
 gi.require_version('Gtk', '3.0')
-
 from gi.repository import Gtk, Gdk
-from .interface.settings.Settings import res_dir
-from .interface.gui.GuiManager import GuiManager
+
+# Resolves error: "attempted relative import with no known parent package"
+# https://stackoverflow.com/questions/16981921/relative-imports-in-python-3
+if __name__ == '__main__':
+    from interface.settings.Settings import res_dir
+    from interface.gui.GuiManager import GuiManager
+else:
+    from .interface.settings.Settings import res_dir
+    from .interface.gui.GuiManager import GuiManager
 
 
 class ClaverMessageBoard(Gtk.Application):
