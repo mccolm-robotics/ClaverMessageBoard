@@ -60,8 +60,18 @@ class NodeConnector:
 
         token = pyotp.TOTP(secret_key)
         if self.check_for_public_key():
-            credentials = json.dumps(
-                {"agent": "node", "nid": serial_num, "token": token.now(), "qdot": public_key, "mode": "WhiteBoard"})
+            credentials = json.dumps({
+                "agent": "node",
+                "nid": serial_num,
+                "token": token.now(),
+                "qdot": public_key,
+                "mode": "WhiteBoard",
+                "state": {
+                    "launcher_ver": {"MAJOR": "0", "MINOR": "9", "PATCH": "0"},
+                    "board_ver": {"MAJOR": "0", "MINOR": "9", "PATCH": "0"},
+                    "branch": "stable"
+                }
+            })
         else:
             credentials = json.dumps({"agent": "node", "nid": serial_num, "mode": "handshake"})
 
