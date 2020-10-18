@@ -16,12 +16,16 @@ class NodeConnector():
         self.task_queue = None
         self.running = True
         self.access_code = None
+        self.config = None
         if use_ssl:
             self.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH, cafile="server.crt")
             self.ssl_context.load_cert_chain(certfile="client.crt", keyfile="client.key")
         self.claver_message_board = claverMessageBoard
         self.uri = "ws://localhost:6789"
         self.public_key = None
+        self.launcher_version = None
+        self.launcher_branch = None
+        self.application_directory = None
         self.event_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.event_loop)
 
@@ -41,6 +45,8 @@ class NodeConnector():
                     if "access_code" in data:
                         print("New access code sent from server.")
                         self.access_code = data["access_code"]
+                    if "initialization" in data:
+                        self.process_initialization_data(data["initialization"])
 
     def send_message_to_gui(self, data: dict):
         """ Sends dictionary of directives to GTK for processing. """
@@ -50,6 +56,11 @@ class NodeConnector():
         """ Packages a notification string as a directive and sends to GTK for processing. """
         data = {"notification": notification}
         GLib.idle_add(self.claver_message_board.messages_received, data)
+
+    def load_json_from_file(self, settings_file):
+        """ Read in the contents of JSON file """
+        with open(settings_file) as file:
+            return json.load(file)
 
     def __getSecretKey(self):
         """ Retrieve secret key from secure storage. """
@@ -91,8 +102,28 @@ class NodeConnector():
         # https://raspberrypi.stackexchange.com/questions/2086/how-do-i-get-the-serial-number
         return "000000003d1d1c36"
 
+    def process_initialization_data(self, data: dict):
+        """ Parses data sent from GTK process during thread creation """
+        if type(data) is dict:
+            if "launcher_version" in data:
+                self.launcher_version = data["launcher_version"]
+            if "launcher_branch" in data:
+                self.launcher_branch = data["launcher_branch"]
+            if "app_dir" in data:
+                self.application_directory = data["app_dir"]
+
     async def __authenticate_connection(self):
         """ Exchanges public data with server to establish trusted connection. """
+        if self.application_directory is not None:
+            config_file_path = os.getcwd() + "/" + self.application_directory + "/interface/config.txt"
+            version_file_path = os.getcwd() + "/" + self.application_directory + "/VERSION.txt"
+        else:
+            config_file_path = os.getcwd() + "/interface/config.txt"
+            version_file_path = os.getcwd() + "/VERSION.txt"
+        if os.path.isfile(config_file_path):
+            self.config = self.load_json_from_file(config_file_path)
+        if os.path.isfile(version_file_path):
+            self.config["version"] = self.load_json_from_file(version_file_path)
 
         print("Transmitting credentials to server")
         secret_key = self.__getSecretKey()
@@ -108,9 +139,10 @@ class NodeConnector():
                 "qdot": public_key,
                 "mode": "WhiteBoard",
                 "state": {
-                    "launcher_ver": {"MAJOR": "0", "MINOR": "9", "PATCH": "0"},
-                    "board_ver": {"MAJOR": "0", "MINOR": "9", "PATCH": "0"},
-                    "branch": "stable"
+                    "launcher_ver": self.launcher_version,
+                    "launcher_branch": self.launcher_branch,
+                    "board_ver": self.config["version"],
+                    "board_branch": self.config["node_branch"]
                 }
             })
         else:

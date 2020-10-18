@@ -25,7 +25,7 @@ class ClaverMessageBoard(Gtk.Application):
     WINDOW_WIDTH = 1280
     WINDOW_HEIGHT = 720
 
-    def __init__(self, request_callback=None):
+    def __init__(self, request_callback=None, launcher_data=None):
         Gtk.Application.__init__(self)
 
         cssProvider = Gtk.CssProvider()
@@ -45,6 +45,8 @@ class ClaverMessageBoard(Gtk.Application):
         self.request_callback = request_callback
         if request_callback is not None:
             self.request_callback(0)
+        if launcher_data is not None:
+            self.messages_sent({"initialization": launcher_data})
 
     def do_activate(self):
         """ Initializes the application window """
