@@ -1,5 +1,5 @@
 import sys
-import threading
+import threading, queue
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
@@ -37,7 +37,8 @@ class ClaverMessageBoard(Gtk.Application):
         self.__gui_manager = GuiManager(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
         self.is_fullscreen = False
 
-        self.node_connector = NodeConnector(self)
+        self.queue = queue.Queue()
+        self.node_connector = NodeConnector(self, self.queue)
         self.t1 = threading.Thread(target=self.node_connector.run_asyncio)
         self.t1.daemon = True
         self.t1.start()
@@ -55,6 +56,7 @@ class ClaverMessageBoard(Gtk.Application):
         window.set_position(Gtk.WindowPosition.CENTER)
         window.connect("size-allocate", self.on_resize)
         window.connect("key-release-event", self.on_key_release)
+        window.connect("destroy", self.cleanup)
 
         # Adds a drawing layer to the window
         window.add(self.__gui_manager.getOverlay())
@@ -66,6 +68,11 @@ class ClaverMessageBoard(Gtk.Application):
             self.quit()
         elif event.keyval == Gdk.KEY_f or event.keyval == Gdk.KEY_F:
             self.fullscreen_mode(window)
+
+    def cleanup(self, widget):
+        print("Closing window")
+        self.queue.put("cleanup")
+        return False
 
     def fullscreen_mode(self, window):
         if self.is_fullscreen == True:
@@ -82,7 +89,8 @@ class ClaverMessageBoard(Gtk.Application):
         self.WINDOW_HEIGHT = size_rect.height
         self.__gui_manager.updateContentAreaDimensions(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
 
-    def update_gui(self, data):
+    def messages_received(self, data):
+        """ Reveives message from thread running asyncio websocket """
         # if "type" in data:
         #     if data["type"] == "state":
         #         self.update_state_label(data["value"])
@@ -90,7 +98,16 @@ class ClaverMessageBoard(Gtk.Application):
         #         self.update_users_label(data["count"])
         #     else:
         #         print("Unsupported event")
-        print(data)
+        if type(data) is dict:
+            if "request" in data:
+                if data["request"] == "access_code":
+                    print("Getting access code")
+                    self.messages_sent({"access_code": "79c6048"})
+
+    def messages_sent(self, message):
+        """ Sends message to thread queue for processing by asyncio websocket """
+        self.queue.put(message)
+
 
 if __name__ == "__main__":
     application = ClaverMessageBoard()
