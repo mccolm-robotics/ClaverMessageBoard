@@ -67,7 +67,7 @@ class ClaverMessageBoard(Gtk.Application):
 
     def on_key_release(self, window, event):
         if event.keyval == Gdk.KEY_Escape:
-            self.quit()
+            self.quit_application()
         elif event.keyval == Gdk.KEY_f or event.keyval == Gdk.KEY_F:
             self.fullscreen_mode(window)
 
@@ -75,6 +75,10 @@ class ClaverMessageBoard(Gtk.Application):
         print("Closing window")
         self.queue.put("cleanup")
         return False
+
+    def quit_application(self):
+        self.queue.put("cleanup")
+        self.quit()
 
     def fullscreen_mode(self, window):
         if self.is_fullscreen == True:
@@ -93,23 +97,20 @@ class ClaverMessageBoard(Gtk.Application):
 
     def messages_received(self, data):
         """ Reveives message from thread running asyncio websocket """
-        # if "type" in data:
-        #     if data["type"] == "state":
-        #         self.update_state_label(data["value"])
-        #     elif data["type"] == "users":
-        #         self.update_users_label(data["count"])
-        #     else:
-        #         print("Unsupported event")
+        print(f"Message received by GTK: {data}")
         if type(data) is dict:
             if "request" in data:
                 if data["request"] == "access_code":
                     print("Getting access code")
                     self.messages_sent({"access_code": "79c6048"})
+            if "type" in data:
+                if data["type"] == "directive":
+                    if data["value"] == "restart":
+                        self.quit_application()
 
     def messages_sent(self, message):
         """ Sends message to thread queue for processing by asyncio websocket """
         self.queue.put(message)
-
 
 if __name__ == "__main__":
     application = ClaverMessageBoard()

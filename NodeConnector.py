@@ -48,7 +48,7 @@ class NodeConnector():
                     if "initialization" in data:
                         self.process_initialization_data(data["initialization"])
 
-    def send_message_to_gui(self, data: dict):
+    def send_data_to_gui(self, data: dict):
         """ Sends dictionary of directives to GTK for processing. """
         GLib.idle_add(self.claver_message_board.messages_received, data)
 
@@ -157,7 +157,7 @@ class NodeConnector():
             data = json.loads(response)
             if "request" in data:
                 if data["request"] == "access_code":
-                    self.send_message_to_gui(data)
+                    self.send_data_to_gui(data)
                     return False, "access_code"
 
             if "qdot" in data:
@@ -255,9 +255,12 @@ class NodeConnector():
                             print("Connection authenticated.")
                             authentication_report = True
                         message = await websocket.recv()
-                        print(f"Message from server: {message}")
-                        data = json.loads(message)
-                        GLib.idle_add(self.claver_message_board.messages_received, data)
+                        self.process_message(message)
                 except websockets.ConnectionClosed:
                     break
         print("Connection closed by server.")
+
+    def process_message(self, message):
+        print(f"Message from server: {message}")
+        data = json.loads(message)
+        self.send_data_to_gui(data)
