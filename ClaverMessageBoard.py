@@ -102,7 +102,7 @@ class ClaverMessageBoard(Gtk.Application):
             if "request" in data:
                 if data["request"] == "access_code":
                     print("Getting access code")
-                    self.messages_sent({"access_code": "79c6048"})
+                    self.messages_sent({"access_code": "de16a8f"})
             if "type" in data:
                 if data["type"] == "directive":
                     if data["value"] == "restart":
@@ -116,3 +116,9 @@ if __name__ == "__main__":
     application = ClaverMessageBoard()
     exit_status = application.run(sys.argv)
     sys.exit(exit_status)
+
+
+""""
+Resources: Temperature & CPU of RPi
+https://www.raspberrypi.org/forums/viewtopic.php?t=252115
+"""

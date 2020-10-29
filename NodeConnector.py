@@ -2,6 +2,8 @@ import asyncio
 import json
 import os
 import ssl
+from pathlib import Path
+
 import pyotp
 import websockets
 import gi
@@ -21,7 +23,7 @@ class NodeConnector():
             self.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH, cafile="server.crt")
             self.ssl_context.load_cert_chain(certfile="client.crt", keyfile="client.key")
         self.claver_message_board = claverMessageBoard
-        self.uri = "ws://localhost:6789"
+        self.uri = "ws://192.168.1.17:6789"
         self.public_key = None
         self.launcher_version = None
         self.launcher_branch = None
@@ -43,9 +45,10 @@ class NodeConnector():
                     self.cleanup()
                 else:
                     if "access_code" in data:
-                        print("New access code sent from server.")
+                        print("New access code sent from GUI.")
                         self.access_code = data["access_code"]
                     if "initialization" in data:
+                        self.dir_path = str(Path(self.dir_path).parents[0])     # Hack - Used to store key outside of app dir when run from the launcher
                         self.process_initialization_data(data["initialization"])
 
     def send_data_to_gui(self, data: dict):
@@ -62,6 +65,19 @@ class NodeConnector():
         with open(settings_file) as file:
             return json.load(file)
 
+    def get_rpi_serial(self):
+        # Extract serial from cpuinfo file
+        cpuserial = ""
+        try:
+            f = open('/proc/cpuinfo', 'r')
+            for line in f:
+                if line[0:6] == 'Serial':
+                    cpuserial = line[10:26]
+            f.close()
+        except:
+            cpuserial = "ERROR"
+        return cpuserial
+
     def __getSecretKey(self):
         """ Retrieve secret key from secure storage. """
         with open(self.dir_path + "/secret_inSecureStorage.txt", "r") as file:
@@ -71,8 +87,8 @@ class NodeConnector():
 
     def __saveSecretKey(self, key):
         """ Save secret key to secure storage. """
-        with open(self.dir_path + "/secret_inSecureStorage.txt", "w") as file:
-            file.write(key)
+        with open(self.dir_path + "/secret_inSecureStorage.txt", "w") as sfile:
+            sfile.write(key)
 
     def check_for_public_key(self):
         """ Checks to see if a public key has been stored for use when authenticating the client connection. """
@@ -93,14 +109,17 @@ class NodeConnector():
     def __savePublicKey(self, key):
         """ Saves public key in secure storage. """
         # ToDo: Implement secure storage
-        with open(self.dir_path + "/public_inSecureStorage.txt", "w") as file:
-            file.write(key)
+        with open(self.dir_path + "/public_inSecureStorage.txt", "w") as pfile:
+            pfile.write(key)
+        self.public_key = key
 
     def __getDeviceID(self):
         """ Retrieves device serial. """
-        # ToDo: Add logic for obtaining device id or serial
-        # https://raspberrypi.stackexchange.com/questions/2086/how-do-i-get-the-serial-number
-        return "000000003d1d1c36"
+        serial_num = self.get_rpi_serial()
+        if serial_num != "ERROR" and serial_num != "":
+            return serial_num
+        else:
+            return "000000003d1d1c36"
 
     def process_initialization_data(self, data: dict):
         """ Parses data sent from GTK process during thread creation """
@@ -125,10 +144,10 @@ class NodeConnector():
         if os.path.isfile(version_file_path):
             self.config["version"] = self.load_json_from_file(version_file_path)
 
-        print("Transmitting credentials to server")
         secret_key = self.__getSecretKey()
         public_key = self.__getPublicKey()
         serial_num = self.__getDeviceID()
+        print(f"File path for key storage: {self.dir_path}")
 
         token = pyotp.TOTP(secret_key)
         if self.check_for_public_key():
@@ -195,6 +214,7 @@ class NodeConnector():
         # Send device id and access code
         serial_num = self.__getDeviceID()
         credentials = json.dumps({"agent": "node", "mode": "handshake", "nid": serial_num, "access_code": self.access_code, "device_name": "Primary", "platform": "RPI 4"})
+        print("Sending access code to server.")
         await self.websocket.send(credentials)
         response = await self.websocket.recv()
         data = json.loads(response)
@@ -264,3 +284,8 @@ class NodeConnector():
         print(f"Message from server: {message}")
         data = json.loads(message)
         self.send_data_to_gui(data)
+
+"""
+Resources: RPi Serial Number
+https://raspberrypi.stackexchange.com/questions/2086/how-do-i-get-the-serial-number
+"""
