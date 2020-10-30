@@ -80,10 +80,13 @@ class NodeConnector():
 
     def __getSecretKey(self):
         """ Retrieve secret key from secure storage. """
-        with open(self.dir_path + "/secret_inSecureStorage.txt", "r") as file:
-            for line in file:
-                secret_key = line.strip()
-        return secret_key
+        if os.path.isfile(self.dir_path + "/secret_inSecureStorage.txt"):
+            with open(self.dir_path + "/secret_inSecureStorage.txt", "r") as file:
+                for line in file:
+                    secret_key = line.strip()
+            return secret_key
+        else:
+            return None
 
     def __saveSecretKey(self, key):
         """ Save secret key to secure storage. """
@@ -99,12 +102,15 @@ class NodeConnector():
 
     def __getPublicKey(self):
         """ Retreives public key from secure storage. """
-        # ToDo: Implement secure storage
-        if self.public_key is None:
-            with open(self.dir_path + "/public_inSecureStorage.txt", "r") as file:
-                for line in file:
-                    self.public_key = line.strip()
-        return self.public_key
+        if os.path.isfile(self.dir_path + "/public_inSecureStorage.txt"):
+            # ToDo: Implement secure storage
+            if self.public_key is None:
+                with open(self.dir_path + "/public_inSecureStorage.txt", "r") as file:
+                    for line in file:
+                        self.public_key = line.strip()
+            return self.public_key
+        else:
+            return None
 
     def __savePublicKey(self, key):
         """ Saves public key in secure storage. """
@@ -268,6 +274,7 @@ class NodeConnector():
                                 await self.initialize_secure_key_exchange()
                         else:
                             print("No existing public key found. Initializing chain of trust.")
+                            await self.__authenticate_connection()
                             await self.get_access_code()
                             await self.initialize_secure_key_exchange()
                     else:

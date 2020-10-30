@@ -102,7 +102,7 @@ class ClaverMessageBoard(Gtk.Application):
             if "request" in data:
                 if data["request"] == "access_code":
                     print("Getting access code")
-                    self.messages_sent({"access_code": "de16a8f"})
+                    self.messages_sent({"access_code": "4a3b10f"})
             if "type" in data:
                 if data["type"] == "directive":
                     if data["value"] == "restart":
