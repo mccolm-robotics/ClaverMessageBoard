@@ -48,6 +48,7 @@ class NodeConnector():
                         print("New access code sent from GUI.")
                         self.access_code = data["access_code"]
                     if "initialization" in data:
+                        # This is information that is only sent when the launcher runs the app
                         self.dir_path = str(Path(self.dir_path).parents[0])     # Hack - Used to store key outside of app dir when run from the launcher
                         self.process_initialization_data(data["initialization"])
 
@@ -128,7 +129,7 @@ class NodeConnector():
             return "000000003d1d1c36"
 
     def process_initialization_data(self, data: dict):
-        """ Parses data sent from GTK process during thread creation """
+        """ Parses data sent from GTK process during thread creation. Only called when app is run using Launcher. """
         if type(data) is dict:
             if "launcher_version" in data:
                 self.launcher_version = data["launcher_version"]
@@ -288,7 +289,7 @@ class NodeConnector():
         print("Connection closed by server.")
 
     def process_message(self, message):
-        print(f"Message from server: {message}")
+        # print(f"Message from server: {message}")
         data = json.loads(message)
         self.send_data_to_gui(data)
 

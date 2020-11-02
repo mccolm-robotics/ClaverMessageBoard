@@ -29,6 +29,11 @@
     min-width: 161px;
 }
 
+.label-notification-message {
+    color: white;
+    padding: 10px 5px;
+}
+
 .nav-button-label {
     color: white;
     font-weight: bold;

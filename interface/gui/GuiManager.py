@@ -1,21 +1,20 @@
 import gi
 gi.require_version('Gtk', '3.0')
-
 from gi.repository import Gtk
-
-from .NotificationLayer import NotificationLayer
-from .MenuLayer import MenuLayer
+from .AlertLayer import AlertLayer
 from .ContentLayer import ContentLayer
-from ..settings.Settings import *
+from .MenuLayer import MenuLayer
+from .NotificationLayer import NotificationLayer
+from ..calendar.CalendarManager import CalendarManager
 from ..doodle.DoodleManager import DoodleManager
 from ..games.GamesManager import GamesManager
-from ..messages.MessagesManager import MessagesManager
-from ..photos.PhotosManager import PhotosManager
-from ..news.NewsManager import NewsManager
-from ..timer.TimerManager import TimerManager
-from ..calendar.CalendarManager import CalendarManager
 from ..lists.ListsManager import ListsManager
+from ..messages.MessagesManager import MessagesManager
+from ..news.NewsManager import NewsManager
+from ..photos.PhotosManager import PhotosManager
+from ..settings.Settings import *
 from ..settings.SettingsManager import SettingsManager
+from ..timer.TimerManager import TimerManager
 
 
 class GuiManager:
@@ -40,6 +39,8 @@ class GuiManager:
             menu_labels[8][0]: SettingsManager(self)
         }
         self.__activeMenu = None
+        self.__notification_layer = NotificationLayer()
+        self.__alert_layer = AlertLayer()
         self.__build_default_interface()
 
     def registerUpdateCallback(self, function):
@@ -75,20 +76,38 @@ class GuiManager:
         return self.__interface_layer
 
     def __build_default_interface(self):
-        """ Initilization: composes layout of main gui """
-        self.__layers.append([NotificationLayer(), 0, False])
+        """ Initilization: composes layout of main gui.
+
+        expected arguments [layer instance, layer order, input passthrough]
+        """
+        self.__layers.append([self.__notification_layer, 0, False])
         self.__layers.append([MenuLayer(self), 1, False])
         self.__layers.append([ContentLayer(self.__window_width, self.__window_height, self.__contentAreaDimensions), 2, True])
+        self.__layers.append([self.__alert_layer, 3, False])
         self.__addOverlays()
 
         self.loadContentArea(default_menu)
 
     def __addOverlays(self):
         for layer in self.__layers:
-            self.__addDisplayLayer(layer[0].getLayoutContainer(), layer[2])
+            self.__addDisplayLayer(layoutContainer=layer[0].getLayoutContainer(), pass_through=layer[2])
 
     def __addDisplayLayer(self, layoutContainer, pass_through=False):
+        # Gtk has a special function for passing input events through to underlying overlay layers
         self.__interface_layer.add_overlay(layoutContainer)
         if pass_through is True:
             self.__interface_layer.set_overlay_pass_through(layoutContainer, True)
 
+    def process_message(self, message):
+        # This assumes that the messages all arrive as single dict with keys "type" and "value"
+        # Structure: {"type": "", "value": "", args}
+        if "type" in message:
+            if message["type"] == "notification":
+                self.__notification_layer.set_notification_message(message["value"])
+            elif message["type"] == "state":
+                if message["value"] == "users":
+                    self.__notification_layer.set_notification_message(f"There are now {message['count']} users connected.")
+            elif message["type"] == "request":
+                    if message["value"] == "access_code":
+                        print("Getting access code")
+                        self.messages_sent({"access_code": "4a3b10f"})

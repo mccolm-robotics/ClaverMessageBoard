@@ -4,9 +4,18 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 from ..settings.Settings import *
 
+"""
+OVERVIEW:
+? How is this layer laid out? Does it cover the entire drawable area (canvas)? Is the layout modified / influenced by elements in other layers?
+How is the layout proportions constrained by css values?
+
+Width of the notification label is set in css (min-width: 161px)
+"""
+
 class NotificationLayer:
     def __init__(self):
         """ Constructor """
+        self.notification_message = None
         self.__default_css_class = default_css_class
         self.__temp_css_class = None
         self.__layout_container = Gtk.Grid(column_homogeneous=False, column_spacing=0, row_spacing=0)  # Create a grid to manage containers
@@ -21,10 +30,14 @@ class NotificationLayer:
         top_bar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)                     # Add a box to contain messages
         top_bar.get_style_context().add_class('message-bar')                          # Connect CSS class to box
         top_bar.set_hexpand(True)                                                     # Set the box to expand 100%
-        label = Gtk.Label()                                                                         # Add a label to the box
-        label.set_text("Notifications")                                                             # Set the value of the label text
-        label.get_style_context().add_class('label-notification')                                   # Connect a CSS class to the label
-        top_bar.add(label)                                                            # Add the label into the box
+        notification_label = Gtk.Label()                                                                         # Create a new label
+        notification_label.set_text("Notifications")                                                             # Set the value of the label text
+        notification_label.get_style_context().add_class('label-notification')                                   # Connect a CSS class to the label
+        top_bar.add(notification_label)                                                                          # Add this label into the top-bar box
+        self.notification_message = Gtk.Label()                                              # Add a new label for the messages
+        self.notification_message.set_text("<SYSTEM MESSAGE>")                               # Set the value of the label text
+        self.notification_message.get_style_context().add_class('label-notification-message')      # Connect a CSS class to the label
+        top_bar.add(self.notification_message)                                               # Add this label into the top-bar box
 
         self.__layout_container.attach(child=top_bar, left=0, top=0, width=1, height=1)  # Attach the box to the layout at 0, 0
 
@@ -33,9 +46,16 @@ class NotificationLayer:
         self.__message_layer_bottom.set_vexpand(True)
         self.__message_layer_bottom.get_style_context().add_class(self.__default_css_class)                             # Connect a CSS class to the box (background colour)
         self.__layout_container.attach(child=self.__message_layer_bottom, left=0, top=1, width=1, height=1)   # Attach this box to the layout below the message bar
+        self.set_notification_message("")
 
     def getContentBoxAllocation(self):
         return self.__message_layer_bottom.get_allocation()
+
+    def set_notification_message(self, message):
+        self.notification_message.set_text(message)
+
+    def clear_notification_message(self):
+        self.notification_message.set_text("")
 
     def setBackgroundColour(self, css_class):
         self.__temp_css_class = css_class

@@ -97,16 +97,13 @@ class ClaverMessageBoard(Gtk.Application):
 
     def messages_received(self, data):
         """ Reveives message from thread running asyncio websocket """
-        print(f"Message received by GTK: {data}")
         if type(data) is dict:
-            if "request" in data:
-                if data["request"] == "access_code":
-                    print("Getting access code")
-                    self.messages_sent({"access_code": "4a3b10f"})
-            if "type" in data:
-                if data["type"] == "directive":
-                    if data["value"] == "restart":
-                        self.quit_application()
+            # Look for actionable directives sent to the GTK app (restart, shutdown, etc)
+            if "type" in data and data["type"] == "directive":
+                if data["value"] == "restart":
+                    self.quit_application()
+            else:
+                self.__gui_manager.process_message(data)
 
     def messages_sent(self, message):
         """ Sends message to thread queue for processing by asyncio websocket """
