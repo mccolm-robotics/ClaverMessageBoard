@@ -25,7 +25,7 @@ class ClaverMessageBoard(Gtk.Application):
     WINDOW_WIDTH = 1280
     WINDOW_HEIGHT = 720
 
-    def __init__(self, request_callback=None, launcher_data=None):
+    def __init__(self, ip_address, port, request_callback=None, launcher_data=None):
         Gtk.Application.__init__(self)
 
         cssProvider = Gtk.CssProvider()
@@ -38,7 +38,7 @@ class ClaverMessageBoard(Gtk.Application):
         self.is_fullscreen = False
 
         self.queue = queue.Queue()
-        self.node_connector = NodeConnector(self, self.queue)
+        self.node_connector = NodeConnector(self, self.queue, ip_address, port)
         self.t1 = threading.Thread(target=self.node_connector.run_asyncio)
         self.t1.daemon = True
         self.t1.start()
@@ -110,7 +110,7 @@ class ClaverMessageBoard(Gtk.Application):
         self.queue.put(message)
 
 if __name__ == "__main__":
-    application = ClaverMessageBoard()
+    application = ClaverMessageBoard("192.168.1.25", "6789")
     exit_status = application.run(sys.argv)
     sys.exit(exit_status)
 

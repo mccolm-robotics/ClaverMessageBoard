@@ -12,7 +12,7 @@ from gi.repository import Gtk, GLib, Gio
 from concurrent.futures import ThreadPoolExecutor
 
 class NodeConnector():
-    def __init__(self, claverMessageBoard, queue, use_ssl=False):
+    def __init__(self, claverMessageBoard, queue, ip_address, port, use_ssl=False):
         self.dir_path = os.path.dirname(os.path.realpath(__file__))
         self.queue = queue
         self.task_queue = None
@@ -23,7 +23,7 @@ class NodeConnector():
             self.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH, cafile="server.crt")
             self.ssl_context.load_cert_chain(certfile="client.crt", keyfile="client.key")
         self.claver_message_board = claverMessageBoard
-        self.uri = "ws://192.168.1.17:6789"
+        self.uri = "ws://" + ip_address + ":" + port
         self.public_key = None
         self.launcher_version = None
         self.launcher_branch = None
@@ -280,7 +280,7 @@ class NodeConnector():
                             await self.initialize_secure_key_exchange()
                     else:
                         if not authentication_report:
-                            print("Connection authenticated.")
+                            print("Connection successfully authenticated.")
                             authentication_report = True
                         message = await websocket.recv()
                         self.process_message(message)

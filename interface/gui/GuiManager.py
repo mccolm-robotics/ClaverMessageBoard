@@ -105,7 +105,7 @@ class GuiManager:
             if message["type"] == "notification":
                 self.__notification_layer.set_notification_message(message["value"])
             elif message["type"] == "state":
-                if message["value"] == "users":
+                if message["values"] == "users":
                     self.__notification_layer.set_notification_message(f"There are now {message['count']} users connected.")
             elif message["type"] == "request":
                     if message["value"] == "access_code":
