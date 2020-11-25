@@ -55,4 +55,16 @@ theme_prefs = dict(
     OUTLINE=5
 )
 
-print(RES_FOLDER)
+
+def get_rpi_serial():
+    # Extract serial from cpuinfo file
+    cpuserial = "ERROR"
+    try:
+        f = open('/proc/cpuinfo', 'r')
+        for line in f:
+            if line[0:6] == 'Serial':
+                cpuserial = line[10:26]
+        f.close()
+    except:
+        cpuserial = "ERROR"
+    return cpuserial

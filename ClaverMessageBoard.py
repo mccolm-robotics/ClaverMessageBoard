@@ -34,19 +34,18 @@ class ClaverMessageBoard(Gtk.Application):
         styleContext = Gtk.StyleContext()
         styleContext.add_provider_for_screen(screen, cssProvider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
-        self.__gui_manager = GuiManager(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
-        self.is_fullscreen = False
-
         self.queue = queue.Queue()
+        self.__gui_manager = GuiManager(self.WINDOW_WIDTH, self.WINDOW_HEIGHT, self.queue)
+        self.is_fullscreen = False
         self.node_connector = NodeConnector(self, self.queue, ip_address, port)
         self.t1 = threading.Thread(target=self.node_connector.run_asyncio)
         self.t1.daemon = True
         self.t1.start()
-        self.request_callback = request_callback
+        self.request_callback = request_callback    # Function reference sent from the launcher script
         if request_callback is not None:
             self.request_callback(0)
-        if launcher_data is not None:
-            self.messages_sent({"initialization": launcher_data})
+        if launcher_data is not None:   # Data provided by launcher script
+            self.__gui_manager.send_message({"initialization": launcher_data})
 
     def do_activate(self):
         """ Initializes the application window """
@@ -104,10 +103,6 @@ class ClaverMessageBoard(Gtk.Application):
                     self.quit_application()
             else:
                 self.__gui_manager.process_message(data)
-
-    def messages_sent(self, message):
-        """ Sends message to thread queue for processing by asyncio websocket """
-        self.queue.put(message)
 
 if __name__ == "__main__":
     application = ClaverMessageBoard("192.168.1.25", "6789")

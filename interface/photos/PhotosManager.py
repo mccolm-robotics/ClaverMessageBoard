@@ -4,7 +4,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 class PhotosManager:
-    def __init__(self):
+    def __init__(self, notification_manager):
         self.__layoutContainer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.__build_content()
 

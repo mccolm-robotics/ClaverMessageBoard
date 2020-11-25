@@ -13,7 +13,7 @@ from .categories.ThemeMenu import ThemeMenu
 
 
 class SettingsManager(CategoryManagerTemplate):
-    def __init__(self, guiManager):
+    def __init__(self, guiManager, notification_manager):
         """ Constructor """
         super().__init__(guiManager)
         self.__contentAreaDimensions = [1, 1]
