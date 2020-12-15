@@ -2,11 +2,11 @@ from .SystemMessages import SystemMessages
 
 
 class Router:
-    def __init__(self, message_queue, notification_manager, mode_objects):
-        self.queue = message_queue
+    def __init__(self, outbound_message_queue, notification_manager, mode_objects):
+        self.__outbound_msg_queue = outbound_message_queue
         self.__notification_manager = notification_manager
         self.__mode_objects = mode_objects
-        self.__system_messages = SystemMessages()
+        self.__system_messages = SystemMessages(notification_manager)
         self.transactions_list = []
 
     def register_route(self, callback):
@@ -18,9 +18,11 @@ class Router:
 
     def process_message(self, message):
         # This assumes that the messages all arrive as single dict with keys "type" and "value"
-        print(f"Received Message: {message}")
+        # print(f"Received Message: {message}")
         if "type" in message:
             if message["type"] == "doodle":
+                self.__system_messages.process_message(message)
+            elif message["type"] == "system":
                 self.__system_messages.process_message(message)
             # if message["type"] == "games":
             # if message["type"] == "messages":
@@ -44,4 +46,4 @@ class Router:
 
     def send_message(self, message):
         """ Sends message to asyncio thread queue for transport by websocket """
-        self.queue.put(message)
+        self.__outbound_msg_queue.put(message)

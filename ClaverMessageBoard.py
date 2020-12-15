@@ -34,10 +34,10 @@ class ClaverMessageBoard(Gtk.Application):
         styleContext = Gtk.StyleContext()
         styleContext.add_provider_for_screen(screen, cssProvider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
-        self.queue = queue.Queue()
-        self.__gui_manager = GuiManager(self.WINDOW_WIDTH, self.WINDOW_HEIGHT, self.queue)
+        self.outbound_msg_queue = queue.Queue()
+        self.__gui_manager = GuiManager(self.WINDOW_WIDTH, self.WINDOW_HEIGHT, self.outbound_msg_queue)
         self.is_fullscreen = False
-        self.node_connector = NodeConnector(self, self.queue, ip_address, port)
+        self.node_connector = NodeConnector(self, self.outbound_msg_queue, ip_address, port)
         self.t1 = threading.Thread(target=self.node_connector.run_asyncio)
         self.t1.daemon = True
         self.t1.start()
@@ -60,7 +60,7 @@ class ClaverMessageBoard(Gtk.Application):
         window.connect("destroy", self.cleanup)
 
         # Adds a drawing layer to the window
-        window.add(self.__gui_manager.getOverlay())
+        window.add(self.__gui_manager.get_overlay())
 
         window.show_all()
 
@@ -72,11 +72,11 @@ class ClaverMessageBoard(Gtk.Application):
 
     def cleanup(self, widget):
         print("Closing window")
-        self.queue.put("cleanup")
+        self.outbound_msg_queue.put("cleanup")
         return False
 
     def quit_application(self):
-        self.queue.put("cleanup")
+        self.outbound_msg_queue.put("cleanup")
         self.quit()
 
     def fullscreen_mode(self, window):
@@ -105,7 +105,7 @@ class ClaverMessageBoard(Gtk.Application):
                 self.__gui_manager.process_message(data)
 
 if __name__ == "__main__":
-    application = ClaverMessageBoard("192.168.1.25", "6789")
+    application = ClaverMessageBoard("192.168.1.17", "6789")
     exit_status = application.run(sys.argv)
     sys.exit(exit_status)
 

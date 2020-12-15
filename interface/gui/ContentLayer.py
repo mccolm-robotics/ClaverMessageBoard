@@ -15,7 +15,7 @@ class ContentLayer:
         self.__layout_container = Gtk.Grid(column_homogeneous=False, column_spacing=0, row_spacing=0)
         self.__build_layer()
 
-    def getLayoutContainer(self):
+    def get_layout_container(self):
         """ Accessor function: returns Gtk layout container """
         return self.__layout_container
 

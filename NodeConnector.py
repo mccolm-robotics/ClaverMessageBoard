@@ -19,6 +19,7 @@ class NodeConnector():
         self.running = True
         self.access_code = None
         self.config = None
+        self.exit_message = None    # Message to send back to GUI when event_loop exits
         if use_ssl:
             self.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH, cafile="server.crt")
             self.ssl_context.load_cert_chain(certfile="client.crt", keyfile="client.key")
@@ -54,11 +55,6 @@ class NodeConnector():
 
     def send_data_to_gui(self, data: dict):
         """ Sends dictionary of directives to GTK for processing. """
-        GLib.idle_add(self.claver_message_board.messages_received, data)
-
-    def send_notification_to_gui(self, notification: str) -> None:
-        """ Packages a notification string as a directive and sends to GTK for processing. """
-        data = {"notification": notification}
         GLib.idle_add(self.claver_message_board.messages_received, data)
 
     def load_json_from_file(self, settings_file):
@@ -249,8 +245,10 @@ class NodeConnector():
         try:
             self.task_queue = self.event_loop.create_task(self.queue_loop())
             self.event_loop.run_until_complete(self.__run())  # Specifies the connection coroutine
+            if self.exit_message is not None:
+                self.send_data_to_gui(self.exit_message)
         except ConnectionRefusedError:
-            self.send_notification_to_gui("Server Status: Offline")
+            # self.send_notification_to_gui("Server Status: Offline")
             print("Connection refused. Server offline")
 
     async def __run(self):
@@ -259,34 +257,42 @@ class NodeConnector():
         """
         authenticated = False
         authentication_report = False
-        async with websockets.connect(self.uri) as websocket:
-            self.websocket = websocket
-            while self.running:
-                try:
-                    if not authenticated:
-                        if self.check_for_public_key():
-                            print("Attempting authentication with stored public key.")
-                            result, error = await self.__authenticate_connection()
-                            if result:
-                                authenticated = True
+
+        try:
+            async with websockets.connect(self.uri) as websocket:
+                self.websocket = websocket
+                while self.running:
+                    try:
+                        if not authenticated:
+                            if self.check_for_public_key():
+                                print("Attempting authentication with stored public key.")
+                                result, error = await self.__authenticate_connection()
+                                if result:
+                                    authenticated = True
+                                else:
+                                    print("Public key invalid. Reinitializing chain of trust.")
+                                    await self.get_access_code()
+                                    await self.initialize_secure_key_exchange()
                             else:
-                                print("Public key invalid. Reinitializing chain of trust.")
+                                print("No existing public key found. Initializing chain of trust.")
+                                await self.__authenticate_connection()
                                 await self.get_access_code()
                                 await self.initialize_secure_key_exchange()
                         else:
-                            print("No existing public key found. Initializing chain of trust.")
-                            await self.__authenticate_connection()
-                            await self.get_access_code()
-                            await self.initialize_secure_key_exchange()
-                    else:
-                        if not authentication_report:
-                            print("Connection successfully authenticated.")
-                            authentication_report = True
-                        message = await websocket.recv()
-                        self.process_message(message)
-                except websockets.ConnectionClosed:
-                    break
-        print("Connection closed by server.")
+                            if not authentication_report:
+                                print("Connection successfully authenticated.")
+                                authentication_report = True
+                            message = await websocket.recv()
+                            self.process_message(message)
+                    except websockets.ConnectionClosed:
+                        break
+            print("Connection closed by server.")
+        except OSError as err:
+            if "Connect call failed" in str(err):
+                print("Unable to connect to server - Bad IP Address.")
+                self.exit_message = {"type": "system", "property": "network", "values": {"error": "bad_server_ip"}}
+            else:
+                print("Unhandled OS error: {0}".format(err))
 
     def process_message(self, message):
         # print(f"Message from server: {message}")

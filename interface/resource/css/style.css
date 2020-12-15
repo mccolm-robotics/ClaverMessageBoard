@@ -76,9 +76,26 @@
     min-width: 161px;
 }
 
-.label-notification-message {
-    color: white;
-    padding: 10px 5px;
+.label-notification-message-normal {
+    color: #a1a1a1;
+    font-size: 25px;
+    padding-left: 10px;
+    min-height: 48px;
+}
+
+.label-notification-message-urgent {
+    color: yellow;
+    font-size: 25px;
+    padding-left: 10px;
+    min-height: 48px;
+}
+
+.notification_container {
+    padding-right: 230px;
+}
+
+.notification-button {
+    margin-left: 10px;
 }
 
 .nav-button-label {

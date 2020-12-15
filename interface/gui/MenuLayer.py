@@ -16,7 +16,7 @@ class MenuLayer:
         self.__layout_container = Gtk.Grid(column_homogeneous=False, column_spacing=0, row_spacing=0)
         self.__build_layer()
 
-    def getLayoutContainer(self):
+    def get_layout_container(self):
         """ Accessor function: returns Gtk layout container """
         return self.__layout_container
 
@@ -60,7 +60,7 @@ class MenuLayer:
 
     @staticmethod
     def draw_rounded_menu_button(context: object, x: object, y: object, width: object, height: object, radius: object, lineWidth: object, active: object) -> object:
-        """ draws rectangles with rounded (circular arc) corners """
+        """ Draws rectangles with rounded (circular arc) corners. This procedure allows any arbitrary shape. """
 
         from math import pi
         degrees = pi / 180
@@ -134,7 +134,7 @@ class MenuLayer:
             if event.button == Gdk.BUTTON_PRIMARY:  # If it is a left click
                 # https://developer.gnome.org/gtk3/stable/GtkContainer.html
                 self.__activeButton = widget.get_children()[0].get_text()
-                self.__guiManager.loadContentArea(widget.get_children()[0].get_text())
+                self.__guiManager.load_content_area(widget.get_children()[0].get_text())
                 # print(widget.get_name())  # Lots of latency on this function
                 widget.get_toplevel().queue_draw()
 

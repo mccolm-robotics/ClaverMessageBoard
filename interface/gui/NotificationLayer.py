@@ -15,13 +15,15 @@ Width of the notification label is set in css (min-width: 161px)
 class NotificationLayer:
     def __init__(self):
         """ Constructor """
-        self.notification_message = None
         self.__default_css_class = default_css_class
         self.__temp_css_class = None
         self.__layout_container = Gtk.Grid(column_homogeneous=False, column_spacing=0, row_spacing=0)  # Create a grid to manage containers
+        self.__notification_container = Gtk.Grid(column_homogeneous=False, column_spacing=0, row_spacing=0)
+        self.__notification_container.set_hexpand(True)
+        self.__notification_container.get_style_context().add_class('notification_container')
         self.__build_layer()
 
-    def getLayoutContainer(self):
+    def get_layout_container(self):
         """ Accessor function: returns Gtk layout container """
         return self.__layout_container
 
@@ -34,10 +36,7 @@ class NotificationLayer:
         notification_label.set_text("Notifications")                                                             # Set the value of the label text
         notification_label.get_style_context().add_class('label-notification')                                   # Connect a CSS class to the label
         top_bar.add(notification_label)                                                                          # Add this label into the top-bar box
-        self.notification_message = Gtk.Label()                                              # Add a new label for the messages
-        self.notification_message.set_text("<SYSTEM MESSAGE>")                               # Set the value of the label text
-        self.notification_message.get_style_context().add_class('label-notification-message')      # Connect a CSS class to the label
-        top_bar.add(self.notification_message)                                               # Add this label into the top-bar box
+        top_bar.add(self.__notification_container)
 
         self.__layout_container.attach(child=top_bar, left=0, top=0, width=1, height=1)  # Attach the box to the layout at 0, 0
 
@@ -46,16 +45,12 @@ class NotificationLayer:
         self.__message_layer_bottom.set_vexpand(True)
         self.__message_layer_bottom.get_style_context().add_class(self.__default_css_class)                             # Connect a CSS class to the box (background colour)
         self.__layout_container.attach(child=self.__message_layer_bottom, left=0, top=1, width=1, height=1)   # Attach this box to the layout below the message bar
-        self.set_notification_message("")
 
     def getContentBoxAllocation(self):
         return self.__message_layer_bottom.get_allocation()
 
-    def set_notification_message(self, message):
-        self.notification_message.set_text(message)
-
-    def clear_notification_message(self):
-        self.notification_message.set_text("")
+    def get_notification_container(self):
+        return self.__notification_container
 
     def setBackgroundColour(self, css_class):
         self.__temp_css_class = css_class
