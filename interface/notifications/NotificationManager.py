@@ -21,9 +21,6 @@ class NotificationManager:
         self.notification_action_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         self.__notification_container.attach(child=self.notification_action_box, left=1, top=0, width=1, height=1)
 
-        # Buttons for the action area box
-        self.__action_button = None
-        self.__list_button = None
 
     def add_notification(self, mode: str, notification: str, priority: int = 3, alert_type: str = None):
         """ Public: Add message to list of active notifications """
@@ -36,7 +33,15 @@ class NotificationManager:
         message = {'mode': mode, 'text': notification, 'priority': priority, 'alert': alert_type}   # Build a record of the notification
         self.__notifications_list.append(message)                                                   # Store record in a list
         notification_id = len(self.__notifications_list) - 1                                        # Set notification to list index value
-        self.__display_notification(notification_id)                                                # Display notification in GUI
+        message = Gtk.Label()
+        message.set_text("Hello World")
+        self.notification_action_box.add(message)
+        self.notification_action_box.show_all()
+        button = Gtk.Button()
+        button.connect("clicked", self.__on_list_clicked)
+        self.label_box.add(button)
+        self.label_box.show_all()
+        # self.__display_notification(notification_id)                                                # Display notification in GUI
 
     def __display_notification(self, notification_id: int):
         notification = self.__notifications_list[notification_id]
@@ -81,7 +86,7 @@ class NotificationManager:
         self.action_button = Gtk.Button()                                           # Create new Gtk.Button
         self.action_button.get_style_context().add_class('notification-button')     # Add CSS class 'notification-button' to style button -> adds left margin spacing
         self.action_button.set_can_focus(False)                                     # Keep the button from holding focus. This is a touch-screen and the focus indicator shows as a dotted line around button
-        self.action_button.connect("clicked", self.__dismiss_clicked)                # Add dedicated action callback function to button
+        self.action_button.connect("clicked", self.__on_dismiss_clicked)                # Add dedicated action callback function to button
         dismiss_image_buffer = GdkPixbuf.Pixbuf.new_from_file_at_scale(             # Create a pixel buffer to hold button image. This buffer is filled with the data from a png image.
             filename=res_dir['BUTTON_IMAGES'] + "button_delete.png",                # The directory path for the resource folder is stored in a dictionary in a settings file
             width=40,
@@ -92,15 +97,16 @@ class NotificationManager:
         self.notification_action_box.add(self.action_button)                        # Add button to the notification action-area box
         self.action_button.show_all()
 
-    def __dismiss_clicked(self, button):
-        print("Dismiss Notification")
+    def __on_dismiss_clicked(self, button):
+        test_alert = AlertAuthorization(self.__gui_manager)
+        self.__gui_manager.show_alert(test_alert.get_content())
 
     def __add_list_button(self):
         # Add 'show_all' button to notification action box
         self.__list_button = Gtk.Button()
         self.__list_button.get_style_context().add_class('notification-button')
         self.__list_button.set_can_focus(False)
-        self.__list_button.connect("clicked", self.__list_clicked)
+        self.__list_button.connect("clicked", self.__on_list_clicked)
         show_all_image_buffer = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             filename=res_dir['BUTTON_IMAGES'] + "arrow_drop_down.png",
             width=40,
@@ -111,6 +117,11 @@ class NotificationManager:
         self.notification_action_box.add(self.__list_button)
         self.__list_button.show_all()
 
-    def __list_clicked(self, button):
+    def test_button(self):
+        button = Gtk.Button()
+        button.connect("clicked", self.__on_list_clicked)
+        self.notification_action_box.add(button)
+
+    def __on_list_clicked(self, button):
         test_alert = AlertAuthorization(self.__gui_manager)
         self.__gui_manager.show_alert(test_alert.get_content())

@@ -9,3 +9,4 @@ class SystemMessages:
                 if "error" in message["values"]:
                     if message["values"]["error"] == "bad_server_ip":
                         self.__notification_manager.add_notification(mode="system", notification="Server IP address unreachable. Review your settings.", priority=2)
+                        # pass
