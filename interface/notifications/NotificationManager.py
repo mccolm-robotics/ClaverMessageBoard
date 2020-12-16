@@ -33,15 +33,7 @@ class NotificationManager:
         message = {'mode': mode, 'text': notification, 'priority': priority, 'alert': alert_type}   # Build a record of the notification
         self.__notifications_list.append(message)                                                   # Store record in a list
         notification_id = len(self.__notifications_list) - 1                                        # Set notification to list index value
-        message = Gtk.Label()
-        message.set_text("Hello World")
-        self.notification_action_box.add(message)
-        self.notification_action_box.show_all()
-        button = Gtk.Button()
-        button.connect("clicked", self.__on_list_clicked)
-        self.label_box.add(button)
-        self.label_box.show_all()
-        # self.__display_notification(notification_id)                                                # Display notification in GUI
+        self.__display_notification(notification_id)                                                # Display notification in GUI
 
     def __display_notification(self, notification_id: int):
         notification = self.__notifications_list[notification_id]
