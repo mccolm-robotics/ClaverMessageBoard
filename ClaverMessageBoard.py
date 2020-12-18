@@ -105,7 +105,7 @@ class ClaverMessageBoard(Gtk.Application):
                 self.__gui_manager.process_message(data)
 
 if __name__ == "__main__":
-    application = ClaverMessageBoard("192.168.1.17", "6789")
+    application = ClaverMessageBoard("127.0.0.1", "6789")
     exit_status = application.run(sys.argv)
     sys.exit(exit_status)
 

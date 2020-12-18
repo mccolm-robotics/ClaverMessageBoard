@@ -17,21 +17,22 @@ class NotificationManager:
         self.label_box.set_hexpand(True)
         self.__notification_container.attach(child=self.label_box, left=0, top=0, width=1, height=1)
 
-        # Add box to contain 'dismiss' and 'show all' buttons
+        # Add box to contain 'dismiss', 'settings, and 'show all' buttons
         self.notification_action_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         self.__notification_container.attach(child=self.notification_action_box, left=1, top=0, width=1, height=1)
 
+        # Add a button to show the notification panel area
         self.__add_list_button()
 
-    def add_notification(self, mode: str, notification: str, priority: int = 3, alert_type: str = None):
+    def add_notification(self, mode_action: dict, notification: str, priority: int = 3, alert_type: str = None):
         """ Public: Add message to list of active notifications """
         # Message structure
         # message = {'mode': 'system', 'text': '', 'priority': '', 'alert': None, 'display_alert': bool}
-        # mode: the object to handle any notification action
+        # mode_action: a dict with object & actions for handling a notification event. eg: {'mode': 'settings', 'action': 'display_menu', 'value': {'menu': 'netork'}}
         # text: string to display in the notification panel
         # priority: 3 - display in order of receipt; 2 - display at top of list; 1 - display as blocking alert
         # alert: the type of alert to display
-        message = {'mode': mode, 'text': notification, 'priority': priority, 'alert': alert_type}   # Build a record of the notification
+        message = {'mode_action': mode_action, 'text': notification, 'priority': priority, 'alert': alert_type}   # Build a record of the notification
         self.__notifications_list.append(message)                                                   # Store record in a list
         notification_id = len(self.__notifications_list) - 1                                        # Set notification to list index value
         self.__display_notification(notification_id)                                                # Display notification in GUI
@@ -45,10 +46,11 @@ class NotificationManager:
             # What if another message already showing? Remove it?
             self.label_box.add(self.__add_notification_action(notification_id))
             self.label_box.show_all()
-        if notification["priority"] < 3:
-            self.__add_settings_button()
-        if num_of_notifications > 1:
-            self.__add_list_button()
+        if notification["priority"] > 1:
+            if notification["mode_action"]["mode"] == "settings":
+                self.__add_settings_button()
+            else:
+                self.__add_dismiss_button()
 
     def __add_notification_action(self, notification_id: int):
         """ Creates a GtkEventBox and Label for each notification """
