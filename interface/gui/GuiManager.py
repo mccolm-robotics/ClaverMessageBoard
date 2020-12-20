@@ -4,6 +4,7 @@ from gi.repository import Gtk
 from .AlertLayer import AlertLayer
 from .ContentLayer import ContentLayer
 from .MenuLayer import MenuLayer
+from .MessageBuilder import MessageBuilder
 from .NotificationLayer import NotificationLayer
 from ..calendar.CalendarManager import CalendarManager
 from ..doodle.DoodleManager import DoodleManager
@@ -19,12 +20,14 @@ from ..timer.TimerManager import TimerManager
 from ..notifications.NotificationManager import NotificationManager
 
 
+
 class GuiManager:
 
     def __init__(self, window_width, window_height, outbound_message_queue):
         """ Constructor """
         self.__window_width = window_width
         self.__window_height = window_height
+        self.__message_builder = MessageBuilder()
         self.__notification_layer = NotificationLayer()
         self.__notification_manager = NotificationManager(self)
         self.__outbound_msg_queue = outbound_message_queue
@@ -33,7 +36,7 @@ class GuiManager:
         self.__updateCallbacks = []
         self.__contentAreaDimensions = [1, 1]
         self.__apps_dict = {
-            # This is probably a bad idea if the labels are changed into a different character set
+            # This is probably a bad idea if the labels are created using a different character set
             menu_labels[0][0].lower(): DoodleManager(notification_manager=self.__notification_manager),
             menu_labels[1][0].lower(): GamesManager(notification_manager=self.__notification_manager),
             menu_labels[2][0].lower(): MessagesManager(notification_manager=self.__notification_manager),
@@ -49,7 +52,12 @@ class GuiManager:
         self.__activeMenu = None
         self.__build_default_interface()
 
+    def get_message_builder(self):
+        """ Public: Returns the message builder object """
+        return self.__message_builder
+
     def get_router(self):
+        """ Public: Returns the router object """
         return self.__router
 
     def get_notification_layer_container(self):

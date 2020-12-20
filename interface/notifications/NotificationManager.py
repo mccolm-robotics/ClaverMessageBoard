@@ -1,7 +1,9 @@
 import gi
+
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 from .AlertAuthorization import AlertAuthorization
+from .AlertNotificationPanel import AlertNotificationPanel
 from ..settings.Settings import *
 
 
@@ -9,6 +11,7 @@ class NotificationManager:
     def __init__(self, gui_manager):
         """ Class constructor """
         self.__gui_manager = gui_manager
+        self.__message_builder = gui_manager.get_message_builder()
         self.__notification_container = gui_manager.get_notification_layer_container()     # Gtk.Grid to hold content for the notification area
         self.__notifications_list = []                      # List of all active notifications
 
@@ -24,11 +27,14 @@ class NotificationManager:
         # Add a button to show the notification panel area
         self.__add_list_button()
 
+    def get_message_builder(self):
+        return self.__message_builder
+
     def add_notification(self, mode_action: dict, notification: str, priority: int = 3, alert_type: str = None):
         """ Public: Add message to list of active notifications """
         # Message structure
-        # message = {'mode': 'system', 'text': '', 'priority': '', 'alert': None, 'display_alert': bool}
-        # mode_action: a dict with object & actions for handling a notification event. eg: {'mode': 'settings', 'action': 'display_menu', 'value': {'menu': 'netork'}}
+        # message = {'mode_action': mode_action, 'text': notification, 'priority': priority, 'alert_type': alert_type}
+        # mode_action: a dict with object & actions for handling a notification event. eg: {'target': 'settings', 'action': 'display_menu', 'value': {'menu': 'netork'}}
         # text: string to display in the notification panel
         # priority: 3 - display in order of receipt; 2 - display at top of list; 1 - display as blocking alert
         # alert: the type of alert to display
@@ -47,7 +53,7 @@ class NotificationManager:
             self.label_box.add(self.__add_notification_action(notification_id))
             self.label_box.show_all()
         if notification["priority"] > 1:
-            if notification["mode_action"]["mode"] == "settings":
+            if notification["mode_action"]["target"] == "settings":
                 self.__add_settings_button()
             else:
                 self.__add_dismiss_button()
@@ -113,7 +119,7 @@ class NotificationManager:
         self.notification_action_box.show_all()
 
     def __on_list_clicked(self, button):
-        test_alert = AlertAuthorization(self.__gui_manager)
+        test_alert = AlertNotificationPanel(self.__gui_manager)
         self.__gui_manager.show_alert(test_alert.get_content())
 
     def __add_settings_button(self):
@@ -133,5 +139,5 @@ class NotificationManager:
         self.notification_action_box.show_all()
 
     def __on_settings_clicked(self, button):
-        test_alert = AlertAuthorization(self.__gui_manager)
+        test_alert = AlertNotificationPanel(self.__gui_manager)
         self.__gui_manager.show_alert(test_alert.get_content())

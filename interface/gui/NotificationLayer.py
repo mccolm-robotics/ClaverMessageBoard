@@ -32,10 +32,10 @@ class NotificationLayer:
         top_bar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)                     # Add a box to contain messages
         top_bar.get_style_context().add_class('message-bar')                          # Connect CSS class to box
         top_bar.set_hexpand(True)                                                     # Set the box to expand 100%
-        notification_label = Gtk.Label()                                                                         # Create a new label
-        notification_label.set_text("Notifications")                                                             # Set the value of the label text
-        notification_label.get_style_context().add_class('label-notification')                                   # Connect a CSS class to the label
-        top_bar.add(notification_label)                                                                          # Add this label into the top-bar box
+        self.notification_label = Gtk.Label()                                                                         # Create a new label
+        self.notification_label.set_text("Notifications")                                                             # Set the value of the label text
+        self.notification_label.get_style_context().add_class('label-notification')                                   # Connect a CSS class to the label
+        top_bar.add(self.notification_label)                                                                          # Add this label into the top-bar box
         top_bar.add(self.__notification_container)
 
         self.__layout_container.attach(child=top_bar, left=0, top=0, width=1, height=1)  # Attach the box to the layout at 0, 0

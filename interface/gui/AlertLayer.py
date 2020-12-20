@@ -1,18 +1,14 @@
-import re
-import subprocess
-
 import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, Gdk
 from ..settings.Settings import *
-from ..system.Transaction import Transaction
 
 
-class AlertLayer(Transaction):
+class AlertLayer:
+    """ Initializes a GTK layout container for use in a GTK.Overlay. This class is instantiated by the GuiManager. """
     def __init__(self, gui_manager):
         """ Constructor """
-        super().__init__(gui_manager.get_router())
         self.__gui_manager = gui_manager
         self.__default_css_class = default_css_class
         self.__layout_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)                        # Add a box below the message bar
@@ -23,7 +19,7 @@ class AlertLayer(Transaction):
         self.__contents_being_displayed = None
 
     def get_layout_container(self):
-        """ Accessor function: returns Gtk layout container """
+        """ Public: Returns Gtk layout container """
         return self.__layout_container
 
     def show_content(self, content):
@@ -38,6 +34,3 @@ class AlertLayer(Transaction):
         """ Public: Remove content from the layout container """
         self.__layout_container.remove(self.__contents_being_displayed)
         self.__contents_being_displayed = None
-
-    def message_processor(self, message):
-        print(message)

@@ -98,6 +98,12 @@
     margin-left: 10px;
 }
 
+.notification-panel {
+    background-color: #005d76;
+    margin-left: 180px;
+    margin-right: 215px;
+}
+
 .nav-button-label {
     color: white;
     font-weight: bold;

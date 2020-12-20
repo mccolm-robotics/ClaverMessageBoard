@@ -1,11 +1,17 @@
 import subprocess
 import gi
+
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 from ..settings.Settings import *
+from ..system.Transaction import Transaction
 
-class AlertAuthorization:
+class AlertAuthorization(Transaction):
+    """ Creates a gui interface for accepting a Claver authorization code. This object is initialized by the
+    NotificationManager and implements the Transaction processing function used for processing messages received from
+    the router."""
     def __init__(self, gui_manager):
+        super().__init__(gui_manager.get_router())
         self.__gui_manager = gui_manager
         self.__build_layer()
 
@@ -119,6 +125,9 @@ class AlertAuthorization:
         """ Returns Gtk.Entry at index """
         if index < len(self.entry_boxes):
             return self.entry_boxes[index]
+
+    def message_processor(self, message):
+        print(f"Authorize Node: {message}")
 
 
 
