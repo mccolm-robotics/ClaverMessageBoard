@@ -52,6 +52,13 @@ class GuiManager:
         self.__activeMenu = None
         self.__build_default_interface()
 
+        #test
+        self.__notification_manager.add_notification(mode_action={'test': 'this'}, notification="Hello World", priority=1)
+
+    def get_notification_manager(self):
+        """ Public: Returns the notification manager object """
+        return self.__notification_manager
+
     def get_message_builder(self):
         """ Public: Returns the message builder object """
         return self.__message_builder

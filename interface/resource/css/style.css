@@ -100,8 +100,17 @@
 
 .notification-panel {
     background-color: #005d76;
-    margin-left: 180px;
+    margin-left: 181px;
     margin-right: 215px;
+}
+
+.notification-panel-top {
+    min-height: 50px;
+    background-color: #353535;
+}
+
+.notification-panel-top-action {
+    margin-right: 15px;
 }
 
 .nav-button-label {
@@ -225,13 +234,4 @@
     border-style: solid;
     border-color: black;
     box-shadow: 10px 10px 8px #121212;
-}
-
-.test-size {
-    font-size: 12px;
-    color: red;
-}
-
-.test {
-    background-color: green;
 }
