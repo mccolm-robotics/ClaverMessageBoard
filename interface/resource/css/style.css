@@ -80,7 +80,7 @@
     color: #a1a1a1;
     font-size: 25px;
     padding-left: 10px;
-    min-height: 48px;
+    min-height: 30px;
 }
 
 .label-notification-message-urgent {
@@ -98,10 +98,22 @@
     margin-left: 10px;
 }
 
+.notification-button-panel {
+    margin-right: 0px;
+}
+
 .notification-panel {
-    background-color: #005d76;
+    background-color: #2a4054;
     margin-left: 181px;
     margin-right: 215px;
+}
+
+.notification-panel-bg {
+    padding: 10px;
+    background-color: green;
+    border-radius: 10px;
+    border-color: red;
+    border-width: 5px;
 }
 
 .notification-panel-top {

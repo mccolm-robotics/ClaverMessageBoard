@@ -53,7 +53,7 @@ class GuiManager:
         self.__build_default_interface()
 
         #test
-        self.__notification_manager.add_notification(mode_action={'test': 'this'}, notification="Hello World", priority=1)
+        self.__notification_manager.add_notification(mode_action={'target': 'this'}, notification="Hello World", priority=3)
 
     def get_notification_manager(self):
         """ Public: Returns the notification manager object """
