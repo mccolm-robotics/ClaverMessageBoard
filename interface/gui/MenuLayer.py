@@ -133,10 +133,11 @@ class MenuLayer:
         if 'GDK_BUTTON_PRESS' in str(event.type):  # If the user made a "single click"
             if event.button == Gdk.BUTTON_PRIMARY:  # If it is a left click
                 # https://developer.gnome.org/gtk3/stable/GtkContainer.html
-                self.__activeButton = widget.get_children()[0].get_text()
+                #  = widget.get_children()[0].get_text()
                 self.__guiManager.load_content_area(widget.get_children()[0].get_text())
-                # print(widget.get_name())  # Lots of latency on this function
-                widget.get_toplevel().queue_draw()
+
+    def set_active_button(self, name: str):
+        self.__activeButton = name
 
     def on_nav_button_released(self, widget, event):
         pass

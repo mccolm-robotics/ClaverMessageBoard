@@ -23,10 +23,11 @@ from ..notifications.NotificationManager import NotificationManager
 
 class GuiManager:
 
-    def __init__(self, window_width, window_height, outbound_message_queue):
+    def __init__(self, window_width, window_height, outbound_message_queue, quit_method: classmethod):
         """ Constructor """
         self.__window_width = window_width
         self.__window_height = window_height
+        self.__quit_program = quit_method
         self.__message_builder = MessageBuilder()
         self.__notification_layer = NotificationLayer()
         self.__notification_manager = NotificationManager(self)
@@ -52,8 +53,20 @@ class GuiManager:
         self.__activeMenu = None
         self.__build_default_interface()
 
-        #test
-        self.__notification_manager.add_notification(mode_action={'target': 'this'}, notification="Hello World", priority=3)
+    def load_content_area(self, menuItemLabel: str, sub_menu_label: str = None):
+        """ Public: This function swaps out layout containers in the content layer depending on the value of the active
+        menu. The value of the menuItemLabel parameter is taken from the label of the menu button that was pressed. """
+        if self.__activeMenu is None:
+            self.__activeMenu = menuItemLabel
+        else:
+            self.__layers[2][0].removeLayoutContainer(self.__apps_dict[self.__activeMenu.lower()].getLayoutContainer())
+            self.__activeMenu = menuItemLabel
+        self.__layers[1][0].set_active_button(menuItemLabel)    # Set menu button to active color
+        self.setBackgroundColour(settings_menu_background_classes_dict[menuItemLabel])
+        #   Note: __layers[2][0] contains the Gtk.Overlay widget for the main content area
+        self.__layers[2][0].addLayoutContainer(self.__apps_dict[menuItemLabel.lower()].getLayoutContainer())
+        if sub_menu_label is not None:
+            self.__apps_dict[menuItemLabel.lower()].loadMenu(sub_menu_label)
 
     def get_notification_manager(self):
         """ Public: Returns the notification manager object """
@@ -76,10 +89,14 @@ class GuiManager:
         self.__alert_layer.show_content(content)    # Pass Gtk.Widget (layout container) to alert_layer to be added to Gtk.Overlay
         self.show_alert_layer()     # Move alert_layer to top of Gtk.Overlay stack
 
-    def close_alert(self):
+    def close_alert_layer(self):
         """ Public: Hides alert layer (Re-orders Gtk.Overlay @ index 3) """
         self.hide_alert_layer()
         self.__alert_layer.clear_content()
+
+    def quit_program(self):
+        """ Public: Triggers quit method. Defined in ClaverMessageBoard.py """
+        self.__quit_program()
 
     def registerUpdateCallback(self, function):
         """ Callback registration: used by category pages to receive updates about window resize events """
@@ -99,18 +116,6 @@ class GuiManager:
     def setBackgroundColour(self, css_class):
         """ Changes the background colour by setting the overlay widget's container to a different CSS class. """
         self.__layers[0][0].setBackgroundColour(css_class)
-
-    def load_content_area(self, menuItemLabel):
-        """ Public: This function swaps out layout containers in the content layer depending on the value of the active
-        menu. The value of the menuItemLabel parameter is taken from the label of the menu button that was pressed. """
-        if self.__activeMenu is None:
-            self.__activeMenu = menuItemLabel
-        else:
-            self.__layers[2][0].removeLayoutContainer(self.__apps_dict[self.__activeMenu.lower()].getLayoutContainer())
-            self.__activeMenu = menuItemLabel
-            self.setBackgroundColour(settings_menu_background_classes_dict[menuItemLabel])
-        #   Note: __layers[2][0] contains the Gtk.Overlay widget for the main content area
-        self.__layers[2][0].addLayoutContainer(self.__apps_dict[menuItemLabel.lower()].getLayoutContainer())
 
     def get_overlay(self):
         """ Accessor function: returns Gtk.Overlay object used for layering window content. """

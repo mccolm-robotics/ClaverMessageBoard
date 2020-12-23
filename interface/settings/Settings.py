@@ -4,8 +4,8 @@ from pathlib import Path
 THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
 RES_FOLDER = str(Path(THIS_FOLDER).parents[0]) + "/resource/"
 
-build_number = "207.<#>.<#>"
-copyright_date = "2020"
+build_number = "20.12.4"
+copyright_date = "2021"
 
 menu_labels = [
     ["Doodle", True],
@@ -42,7 +42,7 @@ settings_menu_background_classes_dict = {
 }
 
 # Default Settings & Preferences
-default_menu = "Settings"
+default_menu = menu_labels[0][0]
 
 res_dir = dict(
     ROOT=RES_FOLDER,

@@ -59,8 +59,10 @@ class SettingsManager(CategoryManagerTemplate):
 
         self.loadMenu(self.__active_menu)
 
-    def loadMenu(self, menuLabel):
+    def loadMenu(self, menuLabel: str):
         """ Load and Initialize: switches out menu pages """
+        if type(menuLabel) == str:
+            menuLabel = menuLabel.capitalize()  # Ensure that the label is capitalized to match the label stored in settings_menu_labels[]
         if self.__active_menu == None:
             self.__active_menu = settings_menu_labels[0]
         else:

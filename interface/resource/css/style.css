@@ -17,7 +17,7 @@
 }
 
 .alert-background {
-    background-color: rgba(30%,30%,30%,0.8);
+    background-color: rgba(30%,30%,30%,0.95);
 }
 
 .alert-button {
@@ -84,7 +84,7 @@
 }
 
 .label-notification-message-urgent {
-    color: yellow;
+    color: #cdcd00;
     font-size: 25px;
     padding-left: 10px;
     min-height: 48px;
@@ -95,30 +95,55 @@
 }
 
 .notification-button {
-    margin-left: 10px;
+    margin: 3px 0px 3px 10px;
 }
 
 .notification-button-panel {
     margin-right: 0px;
 }
 
+.notification-button-panel-icon {
+    margin-right: 10px;
+}
+
 .notification-panel {
     background-color: #2a4054;
-    margin-left: 181px;
-    margin-right: 215px;
+    margin-left: 178px;
+    margin-right: 212px;
+    border-width: 0px 3px;
+    border-style: solid;
+    border-color: #353535;
+}
+
+.notification-panel-button-circle {
+    margin: 3px 0px 3px 10px;
+    border-radius: 20px;
+    background-color: #353535;
+    padding: 7px;
 }
 
 .notification-panel-bg {
     padding: 10px;
-    background-color: green;
-    border-radius: 10px;
-    border-color: red;
-    border-width: 5px;
+}
+
+.notification_panel-footer-box{
+    margin: 10px 15px;
 }
 
 .notification-panel-top {
     min-height: 50px;
     background-color: #353535;
+}
+
+.notification-panel-footer {
+    background-color: #353535;
+    min-height: 50px;
+    border-radius: 20px 20px 0px 0px;
+}
+
+.notification-panel-setting-label {
+    color: white;
+    margin-right: 15px;
 }
 
 .notification-panel-top-action {

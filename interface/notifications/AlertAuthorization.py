@@ -99,7 +99,7 @@ class AlertAuthorization(Transaction):
     def button_clicked(self, button):
         """ Callback for Gtk.Button event """
         if button.get_label() == "Close":
-            self.__gui_manager.close_alert()
+            self.__gui_manager.close_alert_layer()
 
     def confirm_code(self):
         """ Triggered when a value is entered into the final entry box """

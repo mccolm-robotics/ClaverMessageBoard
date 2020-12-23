@@ -16,9 +16,11 @@ class NotificationManager:
         self.__notification_container = gui_manager.get_notification_layer_container()     # Gtk.Grid to hold content for the notification area
         self.__notifications_list = []                      # List of all active notifications
         self.__current_notification_widget = None           # Track the currently visible notification widget
+        self.__current_notification_id = None               # Track the id (list index) of the current notification
         self.__current_action_button = None                 # Track the currently visible action button
-        self.__collapsed_notification_count_label = Gtk.Label()
-        self.__expanded_notification_count_label = None
+        self.__collapsed_notification_count_label = Gtk.Label() # Label showing the total number of notifications stored in notifications_list (visible on the main screen)
+        self.__expanded_notification_count_label = None     # Label showing the total number of notifications stored in the notifications_list (visible only in the notification panel)
+
 
         # Notifications label box
         self.label_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -48,12 +50,7 @@ class NotificationManager:
 
     def add_notification(self, mode_action: dict, notification: str, priority: int = 3, alert_type: str = None):
         """ Public: Add message to list of active notifications """
-        # Message structure
-        # message = {'mode_action': mode_action, 'text': notification, 'priority': priority, 'alert_type': alert_type}
-        # mode_action: a dict with object & actions for handling a notification event. eg: {'target': 'settings', 'action': 'display_menu', 'value': {'menu': 'netork'}}
-        # text: string to display in the notification panel
-        # priority: 3 - display in order of receipt; 2 - display at top of list; 1 - display as blocking alert
-        # alert: the type of alert to display
+        # See https://github.com/mccolm-robotics/ClaverMessageBoard/wiki/Message-Structure for information about the message structure
         notification = {'mode_action': mode_action, 'text': notification, 'priority': priority, 'alert': alert_type}    # Build a record of the notification
         self.__notifications_list.append(notification)                  # Store record in a list
         notification_id = len(self.__notifications_list) - 1                                                            # Set notification to list index value
@@ -68,13 +65,17 @@ class NotificationManager:
                     self.notification_action_box.remove(self.__current_action_button)
                     self.__current_action_button = None
             self.__current_notification_widget = self.add_notification_action(notification=notification, callback=self.__on_notification_pressed, id=len(self.__notifications_list) - 1)
+            self.__current_notification_id = notification_id
             self.label_box.add(self.__current_notification_widget)   # Add Gtk.EventBox for new notification
             self.label_box.show_all()   # Display notification in the display box
         if notification["priority"] > 1:    # Add appropriate action buttons for the notification type
             if notification["mode_action"]["target"] == "settings":
-                self.__add_settings_button()
+                self.__add_settings_button(notification_id)
             else:
                 self.__add_dismiss_button()
+
+    def get_current_notification_id(self):
+        return self.__current_notification_id
 
     def add_notification_action(self, notification: dict, callback: classmethod, id: int) -> Gtk.Widget:
         """ Public: Creates a GtkEventBox and Label for each notification """
@@ -94,18 +95,23 @@ class NotificationManager:
         return notification_action      # Return this widget to calling function
 
     def __on_notification_pressed(self, widget, event):
+        """ Private: Callback function for the notification clicked event """
         if 'GDK_BUTTON_PRESS' in str(event.type):  # If the user made a "single click"
             if event.button == Gdk.BUTTON_PRIMARY:  # If it is a left click
                 notification_id = int(widget.get_name())
                 print("Taking notification action...")
                 
-    def __create_button(self, image: str, callback: classmethod, width: int = 40, height: int = 40, css_class: str = 'notification-button', label: Gtk.Label = None) -> Gtk.Widget:
+    def __create_button(self, image: str, callback: classmethod, width: int = 40, height: int = 40, css_class: str = 'notification-button', label: Gtk.Label = None, id: int = None) -> Gtk.Widget:
         """ Creates a GTK.Button with image from png. Button clicks are connected to 'callback' and an optional label is added from 'label'. """
         # Perform check to make sure png file is valid?
-        action_button = Gtk.Button()                                           # Create new Gtk.Button
-        action_button.get_style_context().add_class(css_class)     # Add CSS class 'notification-button' to style button -> adds left margin spacing
+        formatting_box = Gtk.Box()
+        formatting_box.get_style_context().add_class(css_class)     # Add CSS class 'notification-button' to style button -> adds left margin spacing
+        action_button = Gtk.EventBox()                                           # Create new Gtk.Button
+        formatting_box.add(action_button)
         action_button.set_can_focus(False)                                     # Keep the button from holding focus. This is a touch-screen and the focus indicator shows as a dotted line around button
-        action_button.connect("clicked", callback)            # Add dedicated action callback function to button
+        action_button.connect("button-press-event", callback)            # Add dedicated action callback function to button
+        if id is not None:
+            action_button.set_name(str(id))
         if label is not None:
             preserve_ratio = False
         else:
@@ -123,24 +129,29 @@ class NotificationManager:
             action_button.add(grid)
         else:
             action_button.add(image_pb)
-        return action_button
+        return formatting_box
 
-    def create_dismiss_button(self, callback, width: int = 40, height: int = 40, css_class: str = "notification-button"):
+    def create_dismiss_button(self, callback: classmethod, width: int = 40, height: int = 40, css_class: str = "notification-button", id: int = None):
         """ Public: Create a new 'dismiss' button that displays the 'delete' image """
-        return self.__create_button(image="button_delete.png", callback=callback, width=width, height=height, css_class=css_class)
+        return self.__create_button(image="button_delete.png", callback=callback, width=width, height=height, css_class=css_class, id=id)
 
-    def create_list_button(self, callback):
+    def create_list_button(self, callback: classmethod):
         """ Public: Create a new 'list' button that displays the 'arrow_expand' image """
         return self.__create_button(image="arrow_expand.png", callback=callback, width=40, height=30, label=self.__collapsed_notification_count_label)
     
-    def create_collapse_list_button(self, callback):
+    def create_collapse_list_button(self, callback: classmethod):
         """ Public: Create a new button showing the 'collapse' image and the current number of notifications """
         self.__expanded_notification_count_label = Gtk.Label(str(len(self.__notifications_list)))   # A new label is created because GTK does not allow the same widget to be attached more than once simultaneously. Python automatically garbage collects the last label.
         return self.__create_button(image="arrow_collapse.png", callback=callback, width=40, height=30, label=self.__expanded_notification_count_label)
 
-    def create_settings_button(self, callback):
+    def create_settings_button(self, callback: classmethod, id: int = None):
         """ Public: Create a new button showing the 'settings' image """
-        return self.__create_button(image="button_settings.png", callback=callback)
+        return self.__create_button(image="button_settings.png", callback=callback, id=id)
+
+    def create_generic_button(self, image: str, callback: classmethod, width: int, height: int, css_class: str, label: Gtk.Label = None):
+        """ Public: General button creation interface """
+        return self.__create_button(image=image, callback=callback, width=width, height=height, css_class=css_class, label=label)
+
 
     def __add_dismiss_button(self):
         """ Private: Add dismiss action button to notification action box. """
@@ -159,19 +170,19 @@ class NotificationManager:
         self.notification_action_box.pack_end(list_button, False, False, 0)
         self.notification_action_box.show_all()
 
-    def __on_list_clicked(self, button):
+    def __on_list_clicked(self, widget, event):
         """ Private: Callback function for the 'list' button """
-        test_alert = AlertNotificationPanel(self.__gui_manager)
-        self.__gui_manager.show_alert(test_alert.get_content())
+        notification_panel = AlertNotificationPanel(self.__gui_manager)
+        self.__gui_manager.show_alert(notification_panel.get_content())
 
-    def __add_settings_button(self):
+    def __add_settings_button(self, id: int):
         """ Private: Add settings action button to notification action box. """
         # Add 'show_all' button to notification action box
-        self.__current_action_button = self.create_settings_button(self.__on_settings_clicked)
+        self.__current_action_button = self.create_settings_button(callback=self.__on_settings_clicked, id=id)
         self.notification_action_box.pack_end(self.__current_action_button, False, False, 0)
         self.notification_action_box.show_all()
 
-    def __on_settings_clicked(self, button):
+    def __on_settings_clicked(self, widget, event):
         """ Private: Callback function for the 'settings' button """
-        test_alert = AlertNotificationPanel(self.__gui_manager)
-        self.__gui_manager.show_alert(test_alert.get_content())
+        if self.__notifications_list[int(widget.get_name())]["mode_action"]["action"] == "display_menu":
+            self.__gui_manager.load_content_area(menu_labels[8][0], self.__notifications_list[int(widget.get_name())]["mode_action"]["values"]["menu"])

@@ -35,7 +35,7 @@ class ClaverMessageBoard(Gtk.Application):
         styleContext.add_provider_for_screen(screen, cssProvider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         self.outbound_msg_queue = queue.Queue()
-        self.__gui_manager = GuiManager(self.WINDOW_WIDTH, self.WINDOW_HEIGHT, self.outbound_msg_queue)
+        self.__gui_manager = GuiManager(self.WINDOW_WIDTH, self.WINDOW_HEIGHT, self.outbound_msg_queue, self.quit_application)
         self.is_fullscreen = False
         self.node_connector = NodeConnector(self, self.outbound_msg_queue, ip_address, port)
         self.t1 = threading.Thread(target=self.node_connector.run_asyncio)
