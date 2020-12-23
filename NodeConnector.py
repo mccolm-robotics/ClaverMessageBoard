@@ -24,7 +24,7 @@ class NodeConnector():
             self.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH, cafile="server.crt")
             self.ssl_context.load_cert_chain(certfile="client.crt", keyfile="client.key")
         self.claver_message_board = claverMessageBoard
-        self.uri = "ws://" + ip_address + ":" + port
+        self.uri = "ws://127.0.0.1:6789"
         self.public_key = None
         self.launcher_version = None
         self.launcher_branch = None
