@@ -1,1 +1,1 @@
-{"MAJOR": "20", "MINOR": "12", "PATCH": "24"}
+{"MAJOR": "20", "MINOR": "12", "PATCH": "25"}
