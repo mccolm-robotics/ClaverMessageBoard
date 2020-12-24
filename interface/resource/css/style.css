@@ -49,6 +49,9 @@ button, label {
     color: white;
 }
 
+scale trough highlight {
+    background-color: #3f6286;
+}
 
 text {
     color: red;
