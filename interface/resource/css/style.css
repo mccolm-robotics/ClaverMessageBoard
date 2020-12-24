@@ -45,6 +45,15 @@
     padding: 10px;
 }
 
+button, label {
+    color: white;
+}
+
+
+text {
+    color: red;
+}
+
 .button-background {
     background-image: url("../button_images/button.png");
     border-image: none;
